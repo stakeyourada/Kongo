@@ -1,0 +1,250 @@
+﻿@page "/networkstatistics"
+
+@using Kongo.Core.DataServices
+@using Kongo.Core.Models
+@using System.Globalization
+
+@inject KongoDataStorage _networkData
+
+<div class="container-fluid">
+	<h1>Network Statistics</h1>
+	<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
+	<p>
+		<div class="row">
+			<div><b>Chart timeframe:</b></div>
+			<div class="col-sm-8">
+				<Buttons>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.FifteenMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.FifteenMinutes))">15 min</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThirtyMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThirtyMinutes))">30 min</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.OneHour ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneHour))">1 hour</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.TwelveHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.TwelveHours))">12 hour</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.OneDay ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneDay))">24 hour</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThreeDays ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThreeDays))">72 hour</Button>
+				</Buttons>
+			</div>
+		</div>
+	</p>
+	<p>
+		<div class="container-fluid">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-4">
+						Last Block Received:
+					</div>
+					<div class="col-md-8">
+						@lastBlockReceivedAt.ToString("g", DateTimeFormatInfo.InvariantInfo)
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						Last Fragment Received:
+					</div>
+					<div class="col-md-8">
+						@lastFragmentReceivedAt.ToString("g", DateTimeFormatInfo.InvariantInfo)
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						Last Gossip Received
+					</div>
+					<div class="col-md-8">
+						@lastGossipReceivedAt.ToString("g", DateTimeFormatInfo.InvariantInfo)
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</p>
+	<div class="container-fluid">
+		<div class="container-fluid">			
+			<div class="row">
+				<div class="col-sm-3 col-md-6">
+					<LineChart @ref="establishedConnectionsChart" TItem="int" />
+				</div>
+				<div class="col-sm-9 col-md-6">
+					<LineChart @ref="nodesSendingBlocksChart" TItem="int" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-3 col-md-6">
+					<LineChart @ref="nodesSendingFragmentsChart" TItem="int" />
+				</div>
+				<div class="col-sm-9 col-md-6">
+					<LineChart @ref="nodesGossipingChart" TItem="int" />
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	int dataWindow = 60;
+	TimeRangeEnum dataWindowFlag = TimeRangeEnum.OneHour;
+	int groupInterval = 10;
+
+	LineChart<int> establishedConnectionsChart;
+	LineChart<int> nodesSendingBlocksChart;
+	LineChart<int> nodesSendingFragmentsChart;
+	LineChart<int> nodesGossipingChart;
+	DateTimeOffset lastBlockReceivedAt;
+	DateTimeOffset lastFragmentReceivedAt;
+	DateTimeOffset lastGossipReceivedAt;
+
+	List<ProcessedNetworkStatisticsModel> networkStatisticsHistory;
+
+	protected override Task OnInitializedAsync()
+	{
+		_networkData.Database.EnsureCreated();
+
+		RefreshHistory();
+
+		return Task.FromResult(true);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	async Task HandleRedraw()
+	{
+		establishedConnectionsChart.Clear();
+		nodesSendingBlocksChart.Clear();
+		nodesSendingFragmentsChart.Clear();
+		nodesGossipingChart.Clear();
+
+		RefreshHistory();
+
+		establishedConnectionsChart.AddLabel(networkStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
+		establishedConnectionsChart.AddDataSet(GetEstablishedConnections());
+		nodesSendingBlocksChart.AddLabel(networkStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
+		nodesSendingBlocksChart.AddDataSet(GetNodesSendingBlocks());
+		nodesSendingFragmentsChart.AddLabel(networkStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
+		nodesSendingFragmentsChart.AddDataSet(GetNodesSendingFragments());
+		nodesGossipingChart.AddLabel(networkStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
+		nodesGossipingChart.AddDataSet(GetNodesGossiping());
+
+		await establishedConnectionsChart.Update();
+		await nodesSendingBlocksChart.Update();
+		await nodesSendingFragmentsChart.Update();
+		await nodesGossipingChart.Update();
+	}
+
+	void RefreshHistory()
+	{
+		var allRecords = _networkData.NetworkStats.AsEnumerable();
+		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
+
+		var tempResult = filteredRecords.Max(ns => ns.LastBlockReceivedAt);
+		lastBlockReceivedAt = tempResult.HasValue ? tempResult.Value : default;
+		tempResult = filteredRecords.Max(ns => ns.LastFragmentReceivedAt);
+		lastFragmentReceivedAt = tempResult.HasValue ? tempResult.Value : default;
+		tempResult = filteredRecords.Max(ns => ns.LastGossipReceivedAt);
+		lastGossipReceivedAt = tempResult.HasValue ? tempResult.Value : default;
+
+		networkStatisticsHistory = filteredRecords.GroupBy(x =>
+		{
+			var stamp = x.Timestamp;
+			stamp = stamp.AddMinutes(-(stamp.Minute % groupInterval));
+			stamp = stamp.AddMilliseconds(-stamp.Millisecond - 1000 * stamp.Second);
+			return stamp;
+		})
+		.Select(g => new ProcessedNetworkStatisticsModel
+		{
+			Timestamp = g.Key,
+			TotalEstablishedConnections = (int)g.Average(s => s.TotalEstablishedConnections),
+			BlocksReceivedInPast30Min = (int)g.Average(s => s.BlocksReceivedInPast30Min),
+			FragmentsReceivedInPast30Min = (int)g.Average(s => s.FragmentsReceivedInPast30Min),
+			GossipReceivedInPast30Min = (int)g.Average(s => s.GossipReceivedInPast30Min),
+			LastBlockReceivedAt = g.Max(s => s.LastBlockReceivedAt),
+			LastFragmentReceivedAt = g.Max(s => s.LastFragmentReceivedAt),
+			LastGossipReceivedAt = g.Max(s => s.LastGossipReceivedAt)
+		})
+		.ToList();
+	}
+
+	LineChartDataset<int> GetEstablishedConnections()
+	{
+		return new LineChartDataset<int>
+		{
+			Label = "Established Connections",
+			Data = networkStatisticsHistory.Select(p => p.TotalEstablishedConnections).ToList(),
+			BackgroundColor = backgroundColors_TotalFragments,
+			BorderColor = borderColors_TotalFragments,
+			Fill = true,
+			PointRadius = 2,
+			BorderDash = new List<int> { }
+		};
+	}
+
+	LineChartDataset<int> GetNodesSendingBlocks()
+	{
+		return new LineChartDataset<int>
+		{
+			Label = "Nodes sending Blocks",
+			Data = networkStatisticsHistory.Select(p => p.BlocksReceivedInPast30Min).ToList(),
+			BackgroundColor = backgroundColors_FragmentsInBlock,
+			BorderColor = borderColors_FragmentsInBlock,
+			Fill = true,
+			PointRadius = 2,
+			BorderDash = new List<int> { }
+		};
+	}
+
+	LineChartDataset<int> GetNodesSendingFragments()
+	{
+		return new LineChartDataset<int>
+		{
+			Label = "Nodes sending Fragments",
+			Data = networkStatisticsHistory.Select(p => p.FragmentsReceivedInPast30Min).ToList(),
+			BackgroundColor = backgroundColors_FragmentsPending,
+			BorderColor = borderColors_FragmentsPending,
+			Fill = true,
+			PointRadius = 2,
+			BorderDash = new List<int> { }
+		};
+	}
+
+	LineChartDataset<int> GetNodesGossiping()
+	{
+		return new LineChartDataset<int>
+		{
+			Label = "Nodes Gossiping",
+			Data = networkStatisticsHistory.Select(p => p.GossipReceivedInPast30Min).ToList(),
+			BackgroundColor = backgroundColors_FragmentsReceviedFromNetwork,
+			BorderColor = borderColors_FragmentsReceviedFromNetwork,
+			Fill = true,
+			PointRadius = 2,
+			BorderDash = new List<int> { }
+		};
+	}
+
+	List<string> backgroundColors_TotalFragments = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+	List<string> borderColors_TotalFragments = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+	List<string> backgroundColors_FragmentsInBlock = new List<string> { ChartColor.FromRgba(255, 99, 237, 0.2f) };
+	List<string> borderColors_FragmentsInBlock = new List<string> { ChartColor.FromRgba(255, 99, 237, 1f) };
+
+	List<string> backgroundColors_FragmentsPending = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+	List<string> borderColors_FragmentsPending = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+	List<string> backgroundColors_FragmentsReceviedFromNetwork = new List<string> { ChartColor.FromRgba(255, 99, 237, 0.2f) };
+	List<string> borderColors_FragmentsReceviedFromNetwork = new List<string> { ChartColor.FromRgba(255, 99, 237, 1f) };
+
+	List<string> backgroundColors_FragmentsReceviedFromRest = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+	List<string> borderColors_FragmentsReceviedFromRest = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+	async Task OnTimeRangeClicked(TimeRangeEnum range)
+	{
+		dataWindowFlag = range;
+		dataWindow = (int)dataWindowFlag;
+		groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(range);
+		await HandleRedraw();
+	}
+
+}
+
+
