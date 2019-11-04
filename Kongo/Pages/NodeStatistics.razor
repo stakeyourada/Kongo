@@ -107,7 +107,7 @@
 	{
 		var allRecords = _nodeStatisticsData.NodeStats.AsEnumerable();
 		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
-		var transformedRecords = filteredRecords.Select(t => new NodeStatisticsChartModel {Timestamp = t.Timestamp, LastBlockTime = t.LastBlockTime.Value, BlockRecvCnt = t.BlockRecvCnt, LastBlockHeight = long.Parse(t.LastBlockHeight), UpTime = t.Uptime} );
+		var transformedRecords = filteredRecords.Select(t => new NodeStatisticsChartModel {Timestamp = t.Timestamp, LastBlockTime = t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default, BlockRecvCnt = t.BlockRecvCnt, LastBlockHeight = long.Parse(t.LastBlockHeight), UpTime = t.Uptime} );
 
 		nodeStatisticsHistory = transformedRecords.GroupBy(x =>
 		{
