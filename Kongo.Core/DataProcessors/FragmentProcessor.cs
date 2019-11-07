@@ -28,13 +28,13 @@ namespace Kongo.Core.DataProcessors
 		/// <summary>
 		/// Process Network Fragments and summarize into ProcessedFragmentsModel
 		/// </summary>
-		/// <param name="jsonFragments"></param>
+		/// <param name="jsonContent"></param>
 		/// <returns></returns>
-		public Task<ProcessedFragmentsModel> ProcessFragments(string jsonFragments)
+		public Task<ProcessedFragmentsModel> ProcessFragments(string jsonContent)
 		{
-			Exceptions.ThrowIfNotJson(jsonFragments, "jsonFragments");
+			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 
-			var fragments = JsonConvert.DeserializeObject<List<FragmentModel>>(jsonFragments);
+			var fragments = JsonConvert.DeserializeObject<List<FragmentModel>>(jsonContent);
 
 			var restFragments = fragments.Where(fragment => fragment.Received_from.Equals("Rest"));
 			var networkFragments = fragments.Where(fragment => fragment.Received_from.Equals("Network"));

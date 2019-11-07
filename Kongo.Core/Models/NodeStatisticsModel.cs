@@ -16,5 +16,6 @@ namespace Kongo.Core.Models
 		public long LastBlockTx { get; set; }
 		public long TxRecvCnt { get; set; }
 		public long Uptime { get; set; }
+		public string State { get; set; }
 	}
 }

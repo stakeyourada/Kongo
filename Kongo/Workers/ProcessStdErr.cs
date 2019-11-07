@@ -22,7 +22,7 @@ namespace Kongo.Workers
 		private readonly LogIngestionConfigModel _logIngestionConfig;
 		private readonly Stopwatch _stopwatch;
 		private readonly StringBuilder _sb;
-		private readonly NodeConfigurationModel _nodeConfiguration;
+		//private readonly NodeConfigurationModel _nodeConfiguration;
 
 		public ProcessStdErr(ILogger<ProcessStdErr> logger, LogIngestionConfigModel logIngestionConfig, IProcessStdError processor)
 		{

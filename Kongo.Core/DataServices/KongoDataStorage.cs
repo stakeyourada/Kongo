@@ -54,6 +54,7 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.LastBlockTime).IsRequired(false);
 				b.Property(e => e.LastBlockTx);
 				b.Property(e => e.TxRecvCnt);
+				b.Property(e => e.State).HasMaxLength(20);
 				b.Property(e => e.Uptime);
 				b.ToTable("NodeStatisticEntries");
 			});

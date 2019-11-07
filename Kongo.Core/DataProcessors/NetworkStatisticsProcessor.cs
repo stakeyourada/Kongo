@@ -28,13 +28,13 @@ namespace Kongo.Core.DataProcessors
 		/// <summary>
 		/// Process Network Fragments and summarize into ProcessedFragmentsModel
 		/// </summary>
-		/// <param name="jsonNetworkStatistics"></param>
+		/// <param name="jsonContent"></param>
 		/// <returns></returns>
-		public Task<ProcessedNetworkStatisticsModel> ProcessNetworkStatistics(string jsonNetworkStatistics)
+		public Task<ProcessedNetworkStatisticsModel> ProcessNetworkStatistics(string jsonContent)
 		{
-			Exceptions.ThrowIfNotJson(jsonNetworkStatistics, "jsonNetworkStatistics");
+			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 
-			var networkStats = JsonConvert.DeserializeObject<List<NetworkStatisticsModel>>(jsonNetworkStatistics);
+			var networkStats = JsonConvert.DeserializeObject<List<NetworkStatisticsModel>>(jsonContent);
 
 			var lastBlockReceivedAt = networkStats.Max(x => x.LastBlockReceived).HasValue ? networkStats.Max(x => x.LastBlockReceived).Value : default;
 			var lastFragmentReceivedAt = networkStats.Max(x => x.LastFragmentReceived).HasValue ? networkStats.Max(x => x.LastFragmentReceived).Value : default;
