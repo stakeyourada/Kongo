@@ -1,7 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Company>StakeYourAda.com</Company>
+    <Product>Kongo Stakepool Monitor</Product>
+    <Authors>Steve Edwards</Authors>
+    <Version>0.0.1</Version>
+    <PackageProjectUrl>https://github.com/stakeyourada/Kongo</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/stakeyourada/Kongo</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Copyright>2019 StakeYourAda.com</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +31,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Kongo.Core\Kongo.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
