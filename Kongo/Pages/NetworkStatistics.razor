@@ -4,6 +4,7 @@
 @using Kongo.Core.Models
 @using System.Globalization
 
+@inject KongoStatusModel _statusModel
 @inject KongoDataStorage _networkData
 
 <div class="container-fluid">
@@ -56,7 +57,7 @@
 
 	</p>
 	<div class="container-fluid">
-		<div class="container-fluid">			
+		<div class="container-fluid">
 			<div class="row">
 				<div class="col-sm-3 col-md-6">
 					<LineChart @ref="establishedConnectionsChart" TItem="int" />
@@ -78,9 +79,9 @@
 </div>
 
 @code {
-	int dataWindow = 60;
 	TimeRangeEnum dataWindowFlag = TimeRangeEnum.OneHour;
-	int groupInterval = 10;
+	int dataWindow = (int)TimeRangeEnum.OneHour;
+	int groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(TimeRangeEnum.OneHour);
 
 	LineChart<int> establishedConnectionsChart;
 	LineChart<int> nodesSendingBlocksChart;
@@ -96,6 +97,11 @@
 	{
 		_networkData.Database.EnsureCreated();
 
+		// set this value so the UI renders the active button correctly on first render
+		dataWindowFlag = _statusModel.CurrentChartTimeframe;
+		dataWindow = (int)_statusModel.CurrentChartTimeframe;
+		groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(_statusModel.CurrentChartTimeframe);
+
 		RefreshHistory();
 
 		return Task.FromResult(true);
@@ -105,6 +111,11 @@
 	{
 		if (firstRender)
 		{
+			//// set this value so the UI renders the active button correctly on first render
+			//dataWindowFlag = _statusModel.CurrentChartTimeframe;
+			//dataWindow = (int)_statusModel.CurrentChartTimeframe;
+			//groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(_statusModel.CurrentChartTimeframe);
+
 			await HandleRedraw();
 		}
 	}
@@ -239,6 +250,7 @@
 
 	async Task OnTimeRangeClicked(TimeRangeEnum range)
 	{
+		_statusModel.CurrentChartTimeframe = range;
 		dataWindowFlag = range;
 		dataWindow = (int)dataWindowFlag;
 		groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(range);

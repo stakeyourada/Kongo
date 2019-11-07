@@ -4,6 +4,7 @@
 @using Kongo.Core.Models
 @using System.Globalization
 
+@inject KongoStatusModel _statusModel
 @inject KongoDataStorage _nodeStatisticsData
 
 <div class="container-fluid">
@@ -22,7 +23,7 @@
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThreeDays ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThreeDays))">72 hour</Button>
 				</Buttons>
 			</div>
-		</div>		
+		</div>
 	</p>
 	<div class="container-fluid">
 		<div class="container-fluid">
@@ -48,7 +49,7 @@
 
 @code {
 	TimeRangeEnum dataWindowFlag = TimeRangeEnum.OneHour;
-	int dataWindow = (int)TimeRangeEnum.OneHour;	
+	int dataWindow = (int)TimeRangeEnum.OneHour;
 	int groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(TimeRangeEnum.OneHour);
 
 	LineChart<double> timestampAnalysisChart;
@@ -63,7 +64,9 @@
 		_nodeStatisticsData.Database.EnsureCreated();
 
 		// set this value so the UI renders the active button correctly on first render
-		dataWindowFlag = TimeRangeEnum.OneHour;
+		dataWindowFlag = _statusModel.CurrentChartTimeframe;
+		dataWindow = (int)_statusModel.CurrentChartTimeframe;
+		groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(_statusModel.CurrentChartTimeframe);
 
 		return Task.FromResult(true);
 	}
@@ -72,6 +75,11 @@
 	{
 		if (firstRender)
 		{
+			//// set this value so the UI renders the active button correctly on first render
+			//dataWindowFlag = _statusModel.CurrentChartTimeframe;
+			//dataWindow = (int)_statusModel.CurrentChartTimeframe;
+			//groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(_statusModel.CurrentChartTimeframe);
+
 			await OnTimeRangeClicked(dataWindowFlag);
 		}
 	}
@@ -107,7 +115,7 @@
 	{
 		var allRecords = _nodeStatisticsData.NodeStats.AsEnumerable();
 		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
-		var transformedRecords = filteredRecords.Select(t => new NodeStatisticsChartModel {Timestamp = t.Timestamp, LastBlockTime = t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default, BlockRecvCnt = t.BlockRecvCnt, LastBlockHeight = long.Parse(t.LastBlockHeight), UpTime = t.Uptime} );
+		var transformedRecords = filteredRecords.Select(t => new NodeStatisticsChartModel { Timestamp = t.Timestamp, LastBlockTime = t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default, BlockRecvCnt = t.BlockRecvCnt, LastBlockHeight = long.Parse(t.LastBlockHeight), UpTime = t.Uptime });
 
 		nodeStatisticsHistory = transformedRecords.GroupBy(x =>
 		{
@@ -116,7 +124,7 @@
 			stamp = stamp.AddMilliseconds(-stamp.Millisecond - 1000 * stamp.Second);
 			return stamp;
 		})
-		.Select(g => new NodeStatisticsChartModel { Timestamp = g.Key, LastBlockTime = g.Max(s => s.LastBlockTime), BlockRecvCnt = g.Max(s => s.BlockRecvCnt), LastBlockHeight = g.Max(s => s.LastBlockHeight), UpTime = g.Max(s => s.UpTime)})
+		.Select(g => new NodeStatisticsChartModel { Timestamp = g.Key, LastBlockTime = g.Max(s => s.LastBlockTime), BlockRecvCnt = g.Max(s => s.BlockRecvCnt), LastBlockHeight = g.Max(s => s.LastBlockHeight), UpTime = g.Max(s => s.UpTime) })
 		.ToList();
 	}
 
@@ -124,7 +132,7 @@
 	{
 		return new LineChartDataset<double>
 		{
-			Label = "Time Skew (Block Time vs Server Time) in minutes",
+			Label = "Block Time Skew (LastBlockTime vs Server Time) in minutes",
 			Data = nodeStatisticsHistory.Select(p => new { SkewInMinutes = p.Timestamp.Subtract(p.LastBlockTime).TotalMinutes }).Select(p => p.SkewInMinutes).ToList(),
 			BackgroundColor = backgroundColors_BlockRecvCnt,
 			BorderColor = borderColors_BlockRecvCnt,
@@ -187,6 +195,7 @@
 
 	async Task OnTimeRangeClicked(TimeRangeEnum range)
 	{
+		_statusModel.CurrentChartTimeframe = range;
 		dataWindowFlag = range;
 		dataWindow = (int)dataWindowFlag;
 		groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(range);
