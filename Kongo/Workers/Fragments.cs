@@ -20,14 +20,16 @@ namespace Kongo.Workers
 		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
+		private readonly KongoOptions _opts;
 
-		public Fragments(ILogger<Fragments> logger, NodeConfigurationModel nodeConfiguration, IProcessFragments processor)
+		public Fragments(ILogger<Fragments> logger, NodeConfigurationModel nodeConfiguration, IProcessFragments processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
+			_opts = opts;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,7 +40,7 @@ namespace Kongo.Workers
 				var host = _nodeConfiguration.Rest.Listen.Substring(0, _nodeConfiguration.Rest.Listen.IndexOf(':'));
 				Int32.TryParse(portPart, out int port);
 				var requestUri = new UriBuilder("http", host, port, "api/v0/fragment/logs");
-
+				
 				try
 				{
 					var response = await _httpClient.GetAsync(requestUri.Uri);
@@ -47,7 +49,17 @@ namespace Kongo.Workers
 					response.EnsureSuccessStatusCode();
 
 					string content = await response.Content.ReadAsStringAsync();
-					//_logger.LogInformation(content);
+
+					if (_opts.Verbose)
+					{
+						var currentForeground = Console.ForegroundColor;
+						Console.ForegroundColor = ConsoleColor.Cyan;
+						Console.WriteLine(requestUri.Uri.ToString());
+						Console.WriteLine(response);
+						Console.WriteLine(content);
+						Console.WriteLine();
+						Console.ForegroundColor = currentForeground;
+					}
 
 					var processedFragments = await _processor.ProcessFragments(content);
 

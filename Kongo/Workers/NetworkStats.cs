@@ -20,14 +20,16 @@ namespace Kongo.Workers
 		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
+		private readonly KongoOptions _opts;
 
-		public NetworkStats(ILogger<NetworkStats> logger, NodeConfigurationModel nodeConfiguration, IProcessNetworkStatistics processor)
+		public NetworkStats(ILogger<NetworkStats> logger, NodeConfigurationModel nodeConfiguration, IProcessNetworkStatistics processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
+			_opts = opts;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,6 +51,18 @@ namespace Kongo.Workers
 						response.EnsureSuccessStatusCode();
 
 						string content = await response.Content.ReadAsStringAsync();
+
+						if (_opts.Verbose)
+						{
+							var currentForeground = Console.ForegroundColor;
+							Console.ForegroundColor = ConsoleColor.Cyan;
+							Console.WriteLine(requestUri.Uri.ToString());
+							Console.WriteLine(response);
+							Console.WriteLine(content);
+							Console.WriteLine();
+							Console.ForegroundColor = currentForeground;
+						}
+
 						var processedNetworkStatistics = await _processor.ProcessNetworkStatistics(content);
 
 						_sb.Clear();

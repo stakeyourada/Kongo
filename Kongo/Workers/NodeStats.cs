@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Kongo.Workers
 {
@@ -21,14 +22,18 @@ namespace Kongo.Workers
 		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
+		private readonly KongoOptions _opts;
+		private readonly KongoStatusModel _kongoStatus;
 
-		public NodeStats(ILogger<NodeStats> logger, NodeConfigurationModel nodeConfiguration, IProcessNodeStatistics processor)
+		public NodeStats(ILogger<NodeStats> logger, NodeConfigurationModel nodeConfiguration, IProcessNodeStatistics processor, KongoOptions opts, KongoStatusModel kongoStatus)
 		{
 			_logger = logger;
 			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
+			_opts = opts;
+			_kongoStatus = kongoStatus;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,7 +55,29 @@ namespace Kongo.Workers
 						response.EnsureSuccessStatusCode();
 
 						string content = await response.Content.ReadAsStringAsync();
+
+						if (_opts.Verbose)
+						{
+							var currentForeground = Console.ForegroundColor;
+							Console.ForegroundColor = ConsoleColor.Cyan;
+							Console.WriteLine(requestUri.Uri.ToString());
+							Console.WriteLine(response);
+							Console.WriteLine(content);
+							Console.WriteLine();
+							Console.ForegroundColor = currentForeground;
+						}
+
 						var nodeStatistics = await _processor.ProcessNodeStatistics(content);
+
+						_kongoStatus.PoolState = nodeStatistics.State;
+						
+						if (long.TryParse(nodeStatistics.LastBlockHeight, out long blockHeight))
+							_kongoStatus.CurrentBlockHeight = blockHeight;
+						else
+							_kongoStatus.CurrentBlockHeight = 0;
+
+						_kongoStatus.LastBlockReceivedAt = nodeStatistics.LastBlockTime.Value;
+						_kongoStatus.PoolUptime = TimeSpan.FromSeconds(nodeStatistics.Uptime);
 
 						_sb.Clear();
 						_sb.AppendLine($"NodeStatistics running at: {DateTimeOffset.Now}");
