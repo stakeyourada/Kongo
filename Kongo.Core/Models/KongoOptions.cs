@@ -19,28 +19,31 @@ namespace Kongo.Core.Models
 		[Option('d', "database-path", Required = true, HelpText = "path {folder path only} to Kongo.SQlite datbase")]
 		public string DatabasePath { get; set; }
 
-		[Option("node-stats", Required = false, HelpText = "Refresh node stats every 30 seconds")]
+		[Option("node-stats", Required = false, HelpText = "Query node stats every 30 seconds")]
 		public bool NodeStats { get; set; }
 
-		[Option("network-stats", Required = false, HelpText = "Refresh network stats every 30 seconds")]
+		[Option("network-stats", Required = false, HelpText = "Query network stats every 30 seconds")]
 		public bool NetworkStats { get; set; }
 
-		[Option("fragment-logs", Required = false, HelpText = "Refresh fragment logs every 30 seconds")]
+		[Option("fragment-logs", Required = false, HelpText = "Query fragment logs every 30 seconds")]
 		public bool FragmentLogs { get; set; }
 
 		[Option("show-fragments", Required = false, HelpText = "Output verbose list of fragment logs every 30 seconds, requires --fragment-logs")]
 		public bool ShowFragments { get; set; }
 
-		[Option("leader-logs", Required = false, HelpText = "Refresh leaders every 30 seconds")]
+		[Option("leader-logs", Required = false, HelpText = "Query leaders every 30 seconds")]
 		public bool LeaderLogs { get; set; }
 
-		[Option("stake-pool-logs", Required = false, HelpText = "Refresh list of Stake Pools every 30 seconds")]
+		[Option("pool-settings", Required = false, HelpText = "Query pool settings every 30 seconds")]
+		public bool PoolSettings { get; set; }
+
+		[Option("stake-pool-logs", Required = false, HelpText = "Query list of Stake Pools every 30 seconds")]
 		public bool StakePools { get; set; }
 
-		[Option("stake-logs", Required = false, HelpText = "Refresh Stake Distribution logs every 30 seconds")]
+		[Option("stake-logs", Required = false, HelpText = "Query Stake Distribution logs every 30 seconds")]
 		public bool StakeDistribution { get; set; }
 
-		[Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
+		[Option('v', "verbose", Required = false, HelpText = "Verbose output")]
 		public bool Verbose { get; set; }
 
 		public DateTimeOffset ApplicationStartedOn { get; set; }
@@ -56,6 +59,7 @@ namespace Kongo.Core.Models
 				new Example("\r\nMonitor fragment logs", new KongoOptions { FragmentLogs = true }),
 				new Example("\r\nOutput verbose fragment logs", new KongoOptions { ShowFragments = true }),
 				new Example("\r\nMonitor leaders log", new KongoOptions { LeaderLogs = true }),
+				new Example("\r\nMonitor Pools settings", new KongoOptions { PoolSettings = true }),
 				new Example("\r\nMonitor Stake Pools list", new KongoOptions { StakePools = true }),
 				new Example("\r\nMonitor Stake Distribution", new KongoOptions { StakeDistribution = true }),
 				new Example("\r\nVerbose output", new KongoOptions { Verbose = true })

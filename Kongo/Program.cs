@@ -143,7 +143,7 @@ namespace Kongo
 						Directory.CreateDirectory(databasePath);
 				}
 
-				_dbConnectionString = $"Data Source={databasePath}\\Kongo.SQlite;";
+				_dbConnectionString = $"Data Source={databasePath}/Kongo.SQlite;";
 			}
 			catch (Exception ex)
 			{
