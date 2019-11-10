@@ -1,25 +1,49 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Kongo.Core.Models;
+﻿using Kongo.Core.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Kongo.Core.DataServices
 {
 	public class KongoDataStorage : DbContext
 	{
-		private SqliteConfigurationModel _config;
+		string _connectionString;
 
-		public KongoDataStorage(SqliteConfigurationModel config) {
-			_config = config;
+		// The constructor that ASP.NET Core expects. LINQPad can use it too.
+		public KongoDataStorage(DbContextOptions<KongoDataStorage> options) : base(options) { }
+
+		// This constructor is simpler and more robust. Use it if LINQPad errors on the constructor above.
+		// Note that _connectionString is picked up in the OnConfiguring method below.
+		public KongoDataStorage(string connectionString) => _connectionString = connectionString;
+
+		// This constructor obtains the connection string from your appsettings.json file.
+		// Tell LINQPad to use it if you don't want to specify a connection string in LINQPad's dialog.
+		public KongoDataStorage()
+		{
+			IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+			_connectionString = config.GetConnectionString("DefaultConnection");
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseSqlite($"Data Source={_config.DatabaseName}");
+			// Assign _connectionString to the optionsBuilder:
+			if (_connectionString != null)
+				optionsBuilder.UseSqlite(_connectionString);    // Change to UseSqlite if you're using SQLite
+
+			// Recommended: uncomment the following line to enable lazy-loading navigation hyperlinks in LINQPad:
+			if (InsideLINQPad) optionsBuilder.UseLazyLoadingProxies();
+			// (You'll need to add a reference to the Microsoft.EntityFrameworkCore.Proxies NuGet package, and
+			//  mark your navigation properties as virtual.)
+
+			// Recommended: uncomment the following line to enable the SQL trace window:
+			if (InsideLINQPad) optionsBuilder.EnableSensitiveDataLogging (true);
 		}
 
-		public DbSet<LogIngestionModel> Logs { get; set; }
-		public DbSet<NodeStatisticsModel> NodeStats { get; set; }
-		public DbSet<StoredFragmentsModel> Fragments { get; set; }
-		public DbSet<ProcessedNetworkStatisticsModel> NetworkStats { get; set; }
+		public DbSet<LogIngestionModel> LogEntries { get; set; }
+		public DbSet<NodeStatisticsModel> NodeStatisticEntries { get; set; }
+		public DbSet<StoredFragmentsModel> FragmentStatistics { get; set; }
+		public DbSet<ProcessedNetworkStatisticsModel> NetworkStatistics { get; set; }
+		public bool InsideLINQPad { get; private set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

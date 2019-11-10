@@ -4,6 +4,7 @@ using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,20 +36,57 @@ namespace Kongo.Core.DataProcessors
 		public Task<ProcessedLeadersModel> ProcessLeaders(string jsonContent)
 		{
 			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
-
-			//var fragments = JsonConvert.DeserializeObject<List<FragmentModel>>(jsonFragments);
+			var leaders = JArray.Parse(jsonContent);
 
 			var result = new ProcessedLeadersModel()
 			{
 				Timestamp = DateTimeOffset.UtcNow,
+				Leaders = new List<int>()
 			};
+
+			foreach (var leader in leaders)
+			{
+				if (int.TryParse(leader.ToString(), out int leaderid))
+				{
+					result.Leaders.Add(leaderid);
+				}
+			}
 
 			//// SQL Lite can't map IEnum or dynamic objects, so trim to just the aggregate counts
 			//_database.Leaders.Add(new StoredLeadersModel
 			//{
 			//	Timestamp = result.Timestamp				
 			//});
+
+			//_database.SaveChanges();
+
+			// return ProcessedFragmentsModel result
+			return Task.FromResult(result);
+		}
+
+		public Task<ProcessedLeadersLogsModel> ProcessLeadersLogs(string jsonContent)
+		{
+			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 			
+			var leadersLogs = JsonConvert.DeserializeObject<List<LeadersLogsModel>>(jsonContent);
+
+			var result = new ProcessedLeadersLogsModel()
+			{
+				Timestamp = DateTimeOffset.UtcNow,
+				LeadersLogs = new List<LeadersLogsModel>()
+			};
+
+			foreach (var log in leadersLogs)
+			{
+				result.LeadersLogs.Add(log);
+			}
+
+			//// SQL Lite can't map IEnum or dynamic objects, so trim to just the aggregate counts
+			//_database.Leaders.Add(new StoredLeadersModel
+			//{
+			//	Timestamp = result.Timestamp				
+			//});
+
 			//_database.SaveChanges();
 
 			// return ProcessedFragmentsModel result

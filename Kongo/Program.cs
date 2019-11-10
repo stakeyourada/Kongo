@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using CommandLine;
 using Kongo.Core.DataProcessors;
 using Kongo.Core.DataServices;
@@ -23,11 +24,12 @@ namespace Kongo
 	/// </summary>
 	public class Program
 	{
-		private static NodeConfigurationModel _NodeConfig = null;
+		//private static NodeConfigurationModel _NodeConfig = null;
 		private static JObject _NodeSecrets = null;
 		private static KongoOptions _opts;
-		private static SqliteConfigurationModel _sqliteConfiguration = null;
 		private static KongoStatusModel _kongoStatus = null;
+		private static string _dbConnectionString;
+		private static HomePageViewModel _homePageViewModel;
 
 		public static void Main(string[] args)
 		{
@@ -43,6 +45,7 @@ namespace Kongo
 			}
 			catch (ArgumentNullException)
 			{
+				// just ignore this exception and let app close, cmd line help was already displayed
 			}
 
 		}
@@ -52,21 +55,23 @@ namespace Kongo
 				.ConfigureServices((hostContext, services) =>
 				{
 					// Configuration
-					services.AddSingleton<NodeConfigurationModel>(_NodeConfig);
-					services.AddSingleton<SqliteConfigurationModel>(_sqliteConfiguration);
+					//services.AddSingleton<NodeConfigurationModel>(_NodeConfig);
 					services.AddSingleton<KongoOptions>(_opts);
 
 					// Inject data processors
-					services.AddScoped<IProcessFragments, FragmentProcessor>();
-					services.AddScoped<IProcessNetworkStatistics, NetworkStatisticsProcessor>();
-					services.AddScoped<IProcessNodeStatistics, NodeStatisticsProcessor>();
-					services.AddScoped<IProcessLeaders, LeadersProcessor>();
-					services.AddScoped<IProcessStakePools, StakePoolsProcessor>();
-					services.AddScoped<IProcessStake, StakeProcessor>();
+					services.AddSingleton<IProcessFragments, FragmentProcessor>();
+					services.AddSingleton<IProcessNetworkStatistics, NetworkStatisticsProcessor>();
+					services.AddSingleton<IProcessNodeStatistics, NodeStatisticsProcessor>();
+					services.AddSingleton<IProcessLeaders, LeadersProcessor>();
+					services.AddSingleton<IProcessStakePools, StakePoolsProcessor>();
+					services.AddSingleton<IProcessStake, StakeProcessor>();
 
 					// Inject shared models and other services
+					services.AddSingleton<HomePageViewModel>(_homePageViewModel);
 					services.AddSingleton<KongoStatusModel>(_kongoStatus);
-					services.AddTransient<KongoDataStorage>();
+
+					/* https://cmatskas.com/net-core-dependency-injection-with-constructor-parameters-2/ */
+					services.AddTransient<KongoDataStorage>(s => new KongoDataStorage(_dbConnectionString));
 
 					// configure workers
 					if (_opts.NodeStats)
@@ -101,27 +106,6 @@ namespace Kongo
 			YamlDotNet.Serialization.Deserializer deserializer = new Deserializer();
 			Newtonsoft.Json.JsonSerializer js = new JsonSerializer();
 
-			// convert YAML object to json we can work with
-			using (var r = new StreamReader(opts.NodeConfig))
-			{
-				var yamlObject = deserializer.Deserialize(r);
-
-				using var w = new StringWriter();
-				js.Serialize(w, yamlObject);
-				string jsonText = w.ToString();
-
-				_NodeConfig = JsonConvert.DeserializeObject<NodeConfigurationModel>(jsonText);
-
-				if (opts.Verbose)
-				{
-					var currentForeground = Console.ForegroundColor;
-					Console.ForegroundColor = ConsoleColor.Cyan;
-					Console.WriteLine($"Loaded {opts.NodeConfig}");
-					Console.WriteLine(JObject.Parse(jsonText).ToString());
-					Console.ForegroundColor = currentForeground;
-				}
-			}
-
 			if (!string.IsNullOrEmpty(opts.NodeSecrets))
 			{
 				// convert YAML object to json we can work with
@@ -145,20 +129,21 @@ namespace Kongo
 				}
 			}
 
-			// parse database path and create Sqlite configuration object
+			// parse database path and create db connection string
 			try
 			{
 				var databasePath = Path.GetDirectoryName(_opts.DatabasePath);
-				if (databasePath == string.Empty) {
+				if (databasePath == string.Empty)
+				{
 					databasePath = ".";
-				} 
-				else 
-				{ 
-					if (!Directory.Exists(databasePath))				
+				}
+				else
+				{
+					if (!Directory.Exists(databasePath))
 						Directory.CreateDirectory(databasePath);
 				}
 
-				_sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = $"{databasePath}\\Kongo.SQlite" };
+				_dbConnectionString = $"Data Source={databasePath}\\Kongo.SQlite;";
 			}
 			catch (Exception ex)
 			{
@@ -168,7 +153,7 @@ namespace Kongo
 				Console.WriteLine($"Excaption: {ex}, {ex.Message}");
 				Console.ForegroundColor = currentForeground;
 
-				_sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = $"Kongo.SQlite" };				
+				_dbConnectionString = "Data Source=Kongo.SQlite;";				
 			}
 
 			// initialize Kongo Status model
@@ -180,6 +165,8 @@ namespace Kongo
 				PoolState = "Kongo Initializing",
 				PoolUptime = TimeSpan.FromSeconds(0)
 			};
+
+			_homePageViewModel = new HomePageViewModel() { KongoStatus = _kongoStatus };
 
 			return true;
 		}

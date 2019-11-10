@@ -40,7 +40,7 @@ namespace Kongo.Core.DataProcessors
 				nodeStats.LastBlockTime = _opts.ApplicationStartedOn;
 
 			nodeStats.Timestamp = DateTimeOffset.UtcNow;
-			_database.NodeStats.Add(nodeStats);
+			_database.NodeStatisticEntries.Add(nodeStats);
 			_database.SaveChanges();
 
 			return Task.FromResult(nodeStats);

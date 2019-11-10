@@ -55,7 +55,7 @@ namespace Kongo.Core.DataProcessors
 				GossipReceivedInPast30Min = gossipReceivedInPast30Min
 			};
 
-			_database.NetworkStats.Add(result);
+			_database.NetworkStatistics.Add(result);
 			_database.SaveChanges();
 
 			return Task.FromResult(result);

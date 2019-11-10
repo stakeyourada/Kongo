@@ -44,7 +44,7 @@ namespace Kongo.Core.DataProcessors
 
 			var logEntry = JsonConvert.DeserializeObject<LogIngestionModel>(logLine);
 
-			_db.Logs.Add(logEntry);
+			_db.LogEntries.Add(logEntry);
 			_db.SaveChanges();
 			return Task.FromResult(true);
 		}
@@ -57,7 +57,7 @@ namespace Kongo.Core.DataProcessors
 		public Task<ProcessedLogModel> ProcessIngestedLogs()
 		{
 			var result = new ProcessedLogModel();
-			foreach (var msg in _db.Logs)
+			foreach (var msg in _db.LogEntries)
 			{
 				Console.WriteLine($"MsgID={msg.Id}\tLevel: {msg.Level}\tMsg: {msg.Msg}\tNode id: {msg.Node_id}\tPeer: {msg.Peer_addr}\tReason: {msg.Reason}\tTask: {msg.Task}");
 			}

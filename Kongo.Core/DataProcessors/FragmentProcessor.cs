@@ -66,7 +66,7 @@ namespace Kongo.Core.DataProcessors
 			};
 
 			// SQL Lite can't map IEnum or dynamic objects, so trim to just the aggregate counts
-			_database.Fragments.Add(new StoredFragmentsModel
+			_database.FragmentStatistics.Add(new StoredFragmentsModel
 			{
 				Timestamp = result.Timestamp,
 				TotalFragments = result.TotalFragments,
