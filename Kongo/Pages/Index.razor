@@ -1,23 +1,283 @@
 ﻿@page "/"
 
+@using Kongo.Core.DataServices
+@using Kongo.Core.Models
+@using System.Globalization
 
-<div class="container-fluid">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-6 col-md-12">
-				<Card>
-					<CardTitle Size="5">Kongō</CardTitle>
-					<CardImage Source="/assets/images/9.jpg" Alt="Placeholder image">
-					</CardImage>
+@inject HomePageViewModel _homePageViewModel
+@inject KongoDataStorage _leaderEventHistory
+
+<Row>
+	<Column>
+		<Row>
+			<Column ColumnSize="ColumnSize.Is8">
+				<Card Margin="Margin.Is1.FromBottom">
+					<CardHeader>
+						<Row>
+							<strong>
+								Node Statistics:
+							</strong>
+						</Row>
+						<Row>
+							<small>
+								Last run at: 11/9/2019 7:35:00 PM +00:00
+							</small>
+						</Row>
+					</CardHeader>
 					<CardBody>
-						<CardText>
-							A trident-shaped staff which emits a bright light in the darkness, and grants wisdom and insight.
-							The staff belonged originally to the Japanese mountain god Kōya-no-Myōjin.
-						</CardText>
+						<Table IsNarrow="true" IsHoverable="true">
+							<TableBody>
+								<TableRow>
+									<TableRowCell>BlockRecvCnt</TableRowCell>
+									<TableRowCell>45959</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>LastBlockDate</TableRowCell>
+									<TableRowCell>11.1586</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>LastBlockFees</TableRowCell>
+									<TableRowCell>3300</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>LastBlockHash</TableRowCell>
+									<TableRowCell>0a16859b4205fb2bfb4d26acdee8a1bcf91478875892242d5e3db49d1d8220c6</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>LastBlockHeight</TableRowCell>
+									<TableRowCell>7669</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>lastBlockSum</TableRowCell>
+									<TableRowCell>3600</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>LastBlockTime</TableRowCell>
+									<TableRowCell>11/9/2019 7:34:38 PM +00:00</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>LastBlockTx</TableRowCell>
+									<TableRowCell>3</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>TxRecvCnt</TableRowCell>
+									<TableRowCell>27954</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell>Uptime</TableRowCell>
+									<TableRowCell>73809</TableRowCell>
+								</TableRow>
+							</TableBody>
+						</Table>
 					</CardBody>
 				</Card>
-			</div>
-		</div>
-	</div>
-</div>
 
+			</Column>
+			<Column ColumnSize="ColumnSize.Is4">
+				<Card Margin="Margin.Is1.FromBottom">
+					<CardHeader>
+						<Row>
+							<strong>
+								Transaction Summary:
+							</strong>
+						</Row>
+						<Row>
+							<small>
+								Last run at: 11/9/2019 8:47:08 PM +00:00
+							</small>
+						</Row>
+					</CardHeader>
+					<CardBody>
+						<Table IsNarrow="true" IsHoverable="true">
+							<TableBody>
+								<TableRow>
+									<TableRowCell><strong>Total Fragments:</strong></TableRowCell>
+									<TableRowCell>4813</TableRowCell>
+									<TableRowCell></TableRowCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+
+						<Table IsNarrow="true" IsHoverable="true">
+							<TableHeader>
+								<TableRow>
+									<TableHeaderCell>Fragments From:</TableHeaderCell>
+									<TableHeaderCell></TableHeaderCell>
+									<TableHeaderCell></TableHeaderCell>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Rest</TableRowCell>
+									<TableRowCell>0</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Network</TableRowCell>
+									<TableRowCell>4810</TableRowCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+
+						<Table IsNarrow="true" IsHoverable="true">
+							<TableHeader>
+								<TableRow>
+									<TableHeaderCell>Fragments status:</TableHeaderCell>
+									<TableHeaderCell></TableHeaderCell>
+									<TableHeaderCell></TableHeaderCell>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Pending</TableRowCell>
+									<TableRowCell>3</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>InABlock</TableRowCell>
+									<TableRowCell>4810</TableRowCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+					</CardBody>
+				</Card>
+			</Column>
+		</Row>
+
+		<Row>
+			<Column ColumnSize="ColumnSize.Is6">
+				<Card Margin="Margin.Is1.FromBottom">
+					<CardHeader>
+						<Row>
+							<strong>
+								Network Summary:
+							</strong>
+						</Row>
+						<Row>
+							<small>
+								Last run at: 11/9/2019 8:56:38 PM +00:00
+							</small>
+						</Row>
+					</CardHeader>
+					<CardBody>
+						<Table IsNarrow="true" IsHoverable="true">
+							<TableBody>
+								<TableRow>
+									<TableRowCell><strong>Total Established Connections:</strong></TableRowCell>
+									<TableRowCell>167</TableRowCell>
+									<TableRowCell></TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell><strong>Last Events:</strong></TableRowCell>
+									<TableRowCell></TableRowCell>
+									<TableRowCell></TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Block Received:</TableRowCell>
+									<TableRowCell>11/9/2019 8:56:29 PM +00:00</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Fragment Received:</TableRowCell>
+									<TableRowCell>11/9/2019 8:56:30 PM +00:00</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Gossip Received:</TableRowCell>
+									<TableRowCell>11/9/2019 8:56:37 PM +00:00</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell></TableRowCell>
+									<TableRowCell></TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell><strong>30 minute stats:</strong></TableRowCell>
+									<TableRowCell></TableRowCell>
+									<TableRowCell></TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Nodes Sending Block</TableRowCell>
+									<TableRowCell>142</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Nodes Sending Fragments</TableRowCell>
+									<TableRowCell>146</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Nodes Gossiping</TableRowCell>
+									<TableRowCell>147</TableRowCell>
+								</TableRow>
+
+							</TableBody>
+						</Table>
+
+					</CardBody>
+				</Card>
+
+			</Column>
+			<Column ColumnSize="ColumnSize.Is6">
+				<Card Margin="Margin.Is1.FromBottom">
+					<CardHeader>
+						<Row>
+							<strong>
+								Leader Events:
+							</strong>
+						</Row>
+						<Row>
+							<small>
+								Last run at: 11/9/2019 8:47:08 PM +00:00
+							</small>
+						</Row>
+					</CardHeader>
+					<CardBody>
+
+					</CardBody>
+				</Card>
+			</Column>
+		</Row>
+	</Column>
+</Row>
+
+
+@code {
+
+	List<LeadersLogsModel> fragmentStatisticsHistory;
+
+	protected override Task OnInitializedAsync()
+	{
+		_leaderEventHistory.Database.EnsureCreated();
+
+		RefreshHistory();
+
+		return Task.FromResult(true);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	Task HandleRedraw()
+	{
+		RefreshHistory();
+
+		return Task.FromResult(true);
+	}
+
+	void RefreshHistory()
+	{
+		//var allRecords = _fragmentData.LeaderEventHistory.AsEnumerable();
+		//var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
+	}
+
+}

@@ -113,19 +113,41 @@
 
 	void RefreshHistory()
 	{
-		var allRecords = _nodeStatisticsData.NodeStats.AsEnumerable();
-		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
-		var transformedRecords = filteredRecords.Select(t => new NodeStatisticsChartModel { Timestamp = t.Timestamp, LastBlockTime = t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default, BlockRecvCnt = t.BlockRecvCnt, LastBlockHeight = long.Parse(t.LastBlockHeight), UpTime = t.Uptime });
+		var allRecords = _nodeStatisticsData.NodeStatisticEntries.AsEnumerable();
 
-		nodeStatisticsHistory = transformedRecords.GroupBy(x =>
+		var filteredRecords = allRecords
+								.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow))
+								.Select(t => new NodeStatisticsChartModel {
+									Timestamp = t.Timestamp,
+									LastBlockTime = t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default,
+									BlockRecvCnt = t.BlockRecvCnt,
+									LastBlockHeight = long.Parse(t.LastBlockHeight),
+									UpTime = t.Uptime,
+									SkewInMinutes = t.Timestamp.Subtract(t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default).TotalMinutes
+								}).ToList();
+
+		var filteredRecordsCount = filteredRecords.Count();
+
+		nodeStatisticsHistory = filteredRecords.GroupBy(x =>
 		{
 			var stamp = x.Timestamp;
 			stamp = stamp.AddMinutes(-(stamp.Minute % groupInterval));
 			stamp = stamp.AddMilliseconds(-stamp.Millisecond - 1000 * stamp.Second);
 			return stamp;
 		})
-		.Select(g => new NodeStatisticsChartModel { Timestamp = g.Key, LastBlockTime = g.Max(s => s.LastBlockTime), BlockRecvCnt = g.Max(s => s.BlockRecvCnt), LastBlockHeight = g.Max(s => s.LastBlockHeight), UpTime = g.Max(s => s.UpTime) })
-		.ToList();
+		.Select(g => new NodeStatisticsChartModel {
+			Timestamp = g.Key,
+			SkewInMinutes = g.Average(s => s.SkewInMinutes),
+			LastBlockTime = g.Max(s => s.LastBlockTime),
+			BlockRecvCnt = g.Max(s => s.BlockRecvCnt),
+			LastBlockHeight = g.Max(s => s.LastBlockHeight),
+			UpTime = g.Max(s => s.UpTime)
+		}).ToList();
+
+		//foreach (var stat in nodeStatisticsHistory)
+		//{
+		//	Console.WriteLine(stat.Timestamp.AddMinutes(-(stat.Timestamp.Minute %2)).AddMilliseconds(-stat.Timestamp.Millisecond -1000 * stat.Timestamp.Second));
+		//}
 	}
 
 	LineChartDataset<double> GetTimestampSkewForLastBlockTime()
@@ -133,7 +155,8 @@
 		return new LineChartDataset<double>
 		{
 			Label = "Block Time Skew (LastBlockTime vs Server Time) in minutes",
-			Data = nodeStatisticsHistory.Select(p => new { SkewInMinutes = p.Timestamp.Subtract(p.LastBlockTime).TotalMinutes }).Select(p => p.SkewInMinutes).ToList(),
+			//Data = nodeStatisticsHistory.Select(p => new { SkewInMinutes = p.Timestamp.Subtract(p.LastBlockTime).TotalMinutes }).Select(p => p.SkewInMinutes).ToList(),
+			Data = nodeStatisticsHistory.Select(p => p.SkewInMinutes).ToList(),
 			BackgroundColor = backgroundColors_BlockRecvCnt,
 			BorderColor = borderColors_BlockRecvCnt,
 			Fill = true,

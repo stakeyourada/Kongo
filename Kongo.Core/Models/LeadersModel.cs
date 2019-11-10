@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Kongo.Core.Models
 {
-	public class SqliteConfigurationModel
+	public class LeadersModel
 	{
-		public string DatabaseName { get; set; }
+		public IEnumerable<int> LeaderId { get; set; }
 	}
 }

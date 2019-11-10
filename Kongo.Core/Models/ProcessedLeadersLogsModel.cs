@@ -4,9 +4,10 @@ using System.Collections.Generic;
 namespace Kongo.Core.Models
 {
 
-	public class ProcessedLeadersModel
+	public class ProcessedLeadersLogsModel
 	{
+		public long Id { get; set; }
 		public DateTimeOffset Timestamp { get; set; }
-		public List<int> Leaders { get; set; }
+		public List<LeadersLogsModel> LeadersLogs { get; set; }
 	}
 }

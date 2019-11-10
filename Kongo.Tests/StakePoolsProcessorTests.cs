@@ -19,9 +19,8 @@ namespace Kongo.Tests
 		[InlineData(_stakePoolsList1)]
 		public async Task ProcessStakePools(string value)
 		{
-			
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new StakePoolsProcessor(storage, opts);
 			var stakePools = await _processor.ProcessStakePools(value);

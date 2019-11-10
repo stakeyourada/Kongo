@@ -5,6 +5,6 @@ namespace Kongo.Core.Models
 
 	public class ProcessedStakeModel
 	{
-		public DateTimeOffset Timestamp { get; internal set; }
+		public DateTimeOffset Timestamp { get; set; }
 	}
 }

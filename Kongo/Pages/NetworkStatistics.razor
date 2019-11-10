@@ -146,7 +146,7 @@
 
 	void RefreshHistory()
 	{
-		var allRecords = _networkData.NetworkStats.AsEnumerable();
+		var allRecords = _networkData.NetworkStatistics.AsEnumerable();
 		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
 
 		var tempResult = filteredRecords.Max(ns => ns.LastBlockReceivedAt);

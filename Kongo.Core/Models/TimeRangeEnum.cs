@@ -19,15 +19,15 @@
 				case TimeRangeEnum.FifteenMinutes:
 					return 1;
 				case TimeRangeEnum.ThirtyMinutes:
-					return 1;
+					return 2; // 1;
 				case TimeRangeEnum.OneHour:
-					return 2;
+					return 4; // 2;
 				case TimeRangeEnum.TwelveHours:
-					return 10;
+					return 60; // 10;
 				case TimeRangeEnum.OneDay:
-					return 20;
+					return 40; // 20;
 				case TimeRangeEnum.ThreeDays:
-					return 60;
+					return 120; // 60;
 				default:
 					return 1;
 			}

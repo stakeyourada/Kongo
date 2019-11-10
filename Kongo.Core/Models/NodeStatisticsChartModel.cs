@@ -12,5 +12,6 @@ namespace Kongo.Core.Models
 		public long LastBlockHeight { get; set; }
 		public long UpTime { get; set; }
 		public DateTimeOffset LastBlockTime { get; set; }
+		public double SkewInMinutes { get; set; }
 	}
 }
