@@ -22,9 +22,11 @@ namespace Kongo.Workers
 		private readonly LogIngestionConfigModel _logIngestionConfig;
 		private readonly Stopwatch _stopwatch;
 		private readonly StringBuilder _sb;
+		private readonly HomePageViewModel _homePageViewModel;
+
 		//private readonly NodeConfigurationModel _nodeConfiguration;
 
-		public ProcessStdErr(ILogger<ProcessStdErr> logger, LogIngestionConfigModel logIngestionConfig, IProcessStdError processor)
+		public ProcessStdErr(ILogger<ProcessStdErr> logger, LogIngestionConfigModel logIngestionConfig, IProcessStdError processor, HomePageViewModel homePageViewModel)
 		{
 			_logger = logger;
 			_processor = processor;
@@ -32,6 +34,7 @@ namespace Kongo.Workers
 			_logIngestionConfig = logIngestionConfig;
 			_stopwatch = new Stopwatch();
 			_sb = new StringBuilder();
+			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,6 +49,7 @@ namespace Kongo.Workers
 					var logLine = reader.ReadLine();
 					await _processor.IngestLogEntry(logLine, linesRead++);
 					_logger.LogDebug(logLine);
+					
 				}
 
 				Stopwatch stopWatch = new Stopwatch();
@@ -67,6 +71,7 @@ namespace Kongo.Workers
 						if (_stopwatch.Elapsed > TimeSpan.FromSeconds(30))
 						{
 							var processedLogModel = await _processor.ProcessIngestedLogs();
+							_homePageViewModel.ProcessedLog = processedLogModel;
 
 							_sb.Clear();
 							_sb.AppendLine($"Log Summary at: {DateTimeOffset.Now}");

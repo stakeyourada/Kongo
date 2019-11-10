@@ -17,12 +17,14 @@ namespace Kongo.Workers
 		private readonly ILogger<ResourceMonitor> _logger;
 		private readonly IProcessResourceUsage _processor;
 		private readonly StringBuilder _sb;
+		private readonly HomePageViewModel _homePageViewModel;
 
-		public ResourceMonitor(ILogger<ResourceMonitor> logger, IProcessResourceUsage processor)
+		public ResourceMonitor(ILogger<ResourceMonitor> logger, IProcessResourceUsage processor, HomePageViewModel homePageViewModel)
 		{
 			_logger = logger;
 			_processor = processor;
 			_sb = new StringBuilder();
+			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -122,7 +124,9 @@ namespace Kongo.Workers
 
 						//string content = await response.Content.ReadAsStringAsync();
 						//var processedNetworkStatistics = await _processor.ProcessNetworkStatistics(content);
-
+						
+						
+						//_homePageViewModel.NodeResourceUsage = processedResourceUsage;
 						_sb.Clear();
 						_sb.AppendLine($"ResourceMonitor running at: {DateTimeOffset.Now}");
 						_sb.AppendLine();

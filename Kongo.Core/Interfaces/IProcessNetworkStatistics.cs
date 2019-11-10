@@ -5,6 +5,6 @@ namespace Kongo.Core.Interfaces
 {
 	public interface IProcessNetworkStatistics
 	{
-		Task<ProcessedNetworkStatisticsModel> ProcessNetworkStatistics(string jsonNetworkStatistics);
+		Task<ProcessedNetworkStatisticsModel> ProcessNetworkStatistics(string jsonContent);
 	}
 }

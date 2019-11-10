@@ -5,6 +5,6 @@ namespace Kongo.Core.Interfaces
 {
 	public interface IProcessFragments
 	{
-		Task<ProcessedFragmentsModel> ProcessFragments(string jsonFragments);
+		Task<ProcessedFragmentsModel> ProcessFragments(string jsonContent);
 	}
 }

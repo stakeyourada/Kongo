@@ -17,19 +17,19 @@ namespace Kongo.Workers
 	{
 		private readonly ILogger<NetworkStats> _logger;
 		private readonly IProcessNetworkStatistics _processor;
-		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
+		private readonly HomePageViewModel _homePageViewModel;
 
-		public NetworkStats(ILogger<NetworkStats> logger, NodeConfigurationModel nodeConfiguration, IProcessNetworkStatistics processor, KongoOptions opts)
+		public NetworkStats(ILogger<NetworkStats> logger, IProcessNetworkStatistics processor, KongoOptions opts, HomePageViewModel homePageViewModel)
 		{
 			_logger = logger;
-			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
+			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,10 +38,12 @@ namespace Kongo.Workers
 			{
 				using (var client = new HttpClient())
 				{
-					var portPart = _nodeConfiguration.Rest.Listen.Substring(_nodeConfiguration.Rest.Listen.IndexOf(':') + 1, _nodeConfiguration.Rest.Listen.Length - (_nodeConfiguration.Rest.Listen.IndexOf(':') + 1));
-					var host = _nodeConfiguration.Rest.Listen.Substring(0, _nodeConfiguration.Rest.Listen.IndexOf(':'));
+					var uirScheme = _opts.RestUri.Split(':')[0];
+					var host = _opts.RestUri.Split(':')[1].Substring(2);
+					var portPart = _opts.RestUri.Split(':')[2];
 					Int32.TryParse(portPart, out int port);
-					var requestUri = new UriBuilder("http", host, port, "api/v0/network/stats");
+
+					var requestUri = new UriBuilder(uirScheme, host, port, "api/v0/network/stats");
 
 					try
 					{
@@ -64,6 +66,7 @@ namespace Kongo.Workers
 						}
 
 						var processedNetworkStatistics = await _processor.ProcessNetworkStatistics(content);
+						_homePageViewModel.ProcessedNetworkStatistics = processedNetworkStatistics;
 
 						_sb.Clear();
 						_sb.AppendLine($"NetworkStatistics running at: {DateTimeOffset.Now}");

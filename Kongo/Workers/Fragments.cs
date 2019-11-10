@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
 
 namespace Kongo.Workers
 {
@@ -17,33 +18,48 @@ namespace Kongo.Workers
 	{
 		private readonly ILogger<Fragments> _logger;
 		private readonly IProcessFragments _processor;
-		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
+		private readonly HomePageViewModel _homePageViewModel;
 
-		public Fragments(ILogger<Fragments> logger, NodeConfigurationModel nodeConfiguration, IProcessFragments processor, KongoOptions opts)
+		public Fragments(ILogger<Fragments> logger, IProcessFragments processor, KongoOptions opts, HomePageViewModel homePageViewModel)
 		{
 			_logger = logger;
-			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
+			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				var portPart = _nodeConfiguration.Rest.Listen.Substring(_nodeConfiguration.Rest.Listen.IndexOf(':') + 1, _nodeConfiguration.Rest.Listen.Length - (_nodeConfiguration.Rest.Listen.IndexOf(':') + 1));
-				var host = _nodeConfiguration.Rest.Listen.Substring(0, _nodeConfiguration.Rest.Listen.IndexOf(':'));
+				var uirScheme = _opts.RestUri.Split(':')[0];
+				var host = _opts.RestUri.Split(':')[1].Substring(2);
+				var portPart = _opts.RestUri.Split(':')[2];
 				Int32.TryParse(portPart, out int port);
-				var requestUri = new UriBuilder("http", host, port, "api/v0/fragment/logs");
-				
+				var requestUri = new UriBuilder(uirScheme, host, port, "api/v0/fragment/logs");
+
 				try
 				{
+					_httpClient.DefaultRequestHeaders
+					  .Accept
+					  .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
+
 					var response = await _httpClient.GetAsync(requestUri.Uri);
+
+					if (_opts.Verbose)
+					{
+						var currentForeground = Console.ForegroundColor;
+						Console.ForegroundColor = ConsoleColor.Cyan;
+						Console.WriteLine(requestUri.Uri.ToString());
+						Console.WriteLine(response);
+						Console.WriteLine();
+						Console.ForegroundColor = currentForeground;
+					}
 
 					//will throw an exception if not successful
 					response.EnsureSuccessStatusCode();
@@ -54,14 +70,13 @@ namespace Kongo.Workers
 					{
 						var currentForeground = Console.ForegroundColor;
 						Console.ForegroundColor = ConsoleColor.Cyan;
-						Console.WriteLine(requestUri.Uri.ToString());
-						Console.WriteLine(response);
 						Console.WriteLine(content);
 						Console.WriteLine();
 						Console.ForegroundColor = currentForeground;
 					}
 
 					var processedFragments = await _processor.ProcessFragments(content);
+					_homePageViewModel.ProcessedFragments = processedFragments;
 
 					_sb.Clear();
 					_sb.AppendLine($"Fragments running at: {DateTimeOffset.Now}");
@@ -70,26 +85,38 @@ namespace Kongo.Workers
 					_sb.AppendLine();
 					_sb.AppendLine("Fragments from:");
 					_sb.AppendLine($"\t   Rest: {processedFragments.FragmentsReceviedFromRest}");
-					foreach (var frag in processedFragments.RestFragments)
+					if (_opts.ShowFragments)
 					{
-						_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						foreach (var frag in processedFragments.RestFragments)
+						{
+							_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						}
 					}
 					_sb.AppendLine($"\tNetwork: {processedFragments.FragmentsReceviedFromNetwork}");
-					foreach (var frag in processedFragments.NetworkFragments)
+					if (_opts.ShowFragments)
 					{
-						_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						foreach (var frag in processedFragments.NetworkFragments)
+						{
+							_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						}
 					}
 					_sb.AppendLine();
 					_sb.AppendLine("Fragments status:");
 					_sb.AppendLine($"\tPending: {processedFragments.FragmentsPending}");
-					foreach (var frag in processedFragments.PendingFragments)
+					if (_opts.ShowFragments)
 					{
-						_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						foreach (var frag in processedFragments.PendingFragments)
+						{
+							_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						}
 					}
 					_sb.AppendLine($"\tInBlock: {processedFragments.FragmentsInBlock}");
-					foreach (var frag in processedFragments.BlockFragments)
+					if (_opts.ShowFragments)
 					{
-						_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						foreach (var frag in processedFragments.BlockFragments)
+						{
+							_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						}
 					}
 					_sb.AppendLine();
 

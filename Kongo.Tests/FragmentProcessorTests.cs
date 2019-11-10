@@ -25,8 +25,7 @@ namespace Kongo.Tests
 		[InlineData(_fragmentStream2)]
 		public async Task ProcessValidFragmentStream(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new FragmentProcessor(storage);
 			var fragments = await _processor.ProcessFragments(value);
 			Assert.True(fragments != null, "fragements == null");
@@ -50,8 +49,7 @@ namespace Kongo.Tests
 		[InlineData("this is not a json formatted string")]
 		public void InvalidFragmentStream_Throws_ArgumentException(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new FragmentProcessor(storage);
 			Assert.ThrowsAsync<ArgumentException>(() => _processor.ProcessFragments(value));
 		}

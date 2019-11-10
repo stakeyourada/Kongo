@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using System.Collections.Generic;
 
 namespace Kongo.Workers
 {
@@ -17,32 +19,37 @@ namespace Kongo.Workers
 	{
 		private readonly ILogger<Leaders> _logger;
 		private readonly IProcessLeaders _processor;
-		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
+		private readonly HomePageViewModel _homePageViewModel;
 
-		public Leaders(ILogger<Leaders> logger, NodeConfigurationModel nodeConfiguration, IProcessLeaders processor, KongoOptions opts)
+		public Leaders(ILogger<Leaders> logger, IProcessLeaders processor, KongoOptions opts, HomePageViewModel homePageViewModel)
 		{
 			_logger = logger;
-			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
+			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				var portPart = _nodeConfiguration.Rest.Listen.Substring(_nodeConfiguration.Rest.Listen.IndexOf(':') + 1, _nodeConfiguration.Rest.Listen.Length - (_nodeConfiguration.Rest.Listen.IndexOf(':') + 1));
-				var host = _nodeConfiguration.Rest.Listen.Substring(0, _nodeConfiguration.Rest.Listen.IndexOf(':'));
+				var uirScheme = _opts.RestUri.Split(':')[0];
+				var host = _opts.RestUri.Split(':')[1].Substring(2);
+				var portPart = _opts.RestUri.Split(':')[2];
 				Int32.TryParse(portPart, out int port);
-				var requestUri = new UriBuilder("http", host, port, "api/v0/leaders");
+				var requestUri = new UriBuilder(uirScheme, host, port, "api/v0/leaders");
 
 				try
 				{
+					_httpClient.DefaultRequestHeaders
+					  .Accept
+					  .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
+
 					var response = await _httpClient.GetAsync(requestUri.Uri);
 
 					//will throw an exception if not successful
@@ -61,7 +68,37 @@ namespace Kongo.Workers
 						Console.ForegroundColor = currentForeground;
 					}
 
-					var processedFragments = await _processor.ProcessLeaders(content);
+					var processedLeaders = await _processor.ProcessLeaders(content);
+					_homePageViewModel.ProcessedLeaders = processedLeaders;
+
+					if(processedLeaders.Leaders.Count > 0)
+					{
+						try
+						{
+							requestUri = new UriBuilder(uirScheme, host, port, "api/v0/leaders/logs");
+							_httpClient.DefaultRequestHeaders
+								  .Accept
+								  .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
+
+							response = await _httpClient.GetAsync(requestUri.Uri);
+
+							//will throw an exception if not successful
+							response.EnsureSuccessStatusCode();
+
+							content = await response.Content.ReadAsStringAsync();
+
+							var processedLeaderLogs = await _processor.ProcessLeadersLogs(content);
+							_homePageViewModel.ProcessedLeadersLogs = processedLeaderLogs;
+						}
+						catch (Exception)
+						{
+
+							throw;
+						}
+
+						
+
+					}
 
 					_sb.Clear();
 					_sb.AppendLine($"Leaders running at: {DateTimeOffset.Now}");

@@ -25,8 +25,7 @@ namespace Kongo.Tests
 		[InlineData(_networkStatisticsStream)]
 		public async Task ProcessValidNetworkStatisticsStream(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new NetworkStatisticsProcessor(storage);
 			var networkStats = await _processor.ProcessNetworkStatistics(value);
 			Assert.True(networkStats != null, "networkStats == null");
@@ -41,8 +40,7 @@ namespace Kongo.Tests
 		[InlineData(_singleNetworkStatisticRecord)]		
 		public async Task ProcessValidNetworkStatisticsStreamAllNulls(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new NetworkStatisticsProcessor(storage);
 			var networkStats = await _processor.ProcessNetworkStatistics(value);
 			Assert.True(networkStats != null, "networkStats == null");
@@ -59,8 +57,7 @@ namespace Kongo.Tests
 		[InlineData("this is not a json formatted string")]
 		public void InvalidNetworkStatistics_Throws_ArgumentException(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new NetworkStatisticsProcessor(storage);
 			Assert.ThrowsAsync<ArgumentException>(() => _processor.ProcessNetworkStatistics(value));
 		}

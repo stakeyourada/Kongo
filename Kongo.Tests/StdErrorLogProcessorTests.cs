@@ -52,8 +52,7 @@ namespace Kongo.Tests
 		[InlineData(_msg15)]
 		public async Task ProcessValidStdErrStream(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new StdErrorProcessor(storage);
 			await _processor.IngestLogEntry(value, 1);
 			var logs = await _processor.ProcessIngestedLogs();
@@ -80,8 +79,7 @@ namespace Kongo.Tests
 		[InlineData("this is not a json formatted string")]
 		public void InvalidStdErrStream_Throws_ArgumentException(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			_processor = new StdErrorProcessor(storage);
 			Assert.ThrowsAsync<ArgumentException>(() => _processor.IngestLogEntry(value, 1));
 			var result = _processor.DeleteDatabaseFile();

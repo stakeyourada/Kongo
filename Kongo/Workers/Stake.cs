@@ -17,29 +17,31 @@ namespace Kongo.Workers
 	{
 		private readonly ILogger<Stake> _logger;
 		private readonly IProcessStake _processor;
-		private readonly NodeConfigurationModel _nodeConfiguration;
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
+		private readonly HomePageViewModel _homePageViewModel;
 
-		public Stake(ILogger<Stake> logger, NodeConfigurationModel nodeConfiguration, IProcessStake processor, KongoOptions opts)
+		public Stake(ILogger<Stake> logger, IProcessStake processor, KongoOptions opts, HomePageViewModel homePageViewModel)
 		{
 			_logger = logger;
-			_nodeConfiguration = nodeConfiguration;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
+			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
-				var portPart = _nodeConfiguration.Rest.Listen.Substring(_nodeConfiguration.Rest.Listen.IndexOf(':') + 1, _nodeConfiguration.Rest.Listen.Length - (_nodeConfiguration.Rest.Listen.IndexOf(':') + 1));
-				var host = _nodeConfiguration.Rest.Listen.Substring(0, _nodeConfiguration.Rest.Listen.IndexOf(':'));
+				var uirScheme = _opts.RestUri.Split(':')[0];
+				var host = _opts.RestUri.Split(':')[1].Substring(2);
+				var portPart = _opts.RestUri.Split(':')[2];
 				Int32.TryParse(portPart, out int port);
-				var requestUri = new UriBuilder("http", host, port, "api/v0/stake");
+
+				var requestUri = new UriBuilder(uirScheme, host, port, "api/v0/stake");
 
 				try
 				{
@@ -61,7 +63,8 @@ namespace Kongo.Workers
 						Console.ForegroundColor = currentForeground;
 					}
 
-					var processedFragments = await _processor.ProcessStake(content);
+					var processedStake = await _processor.ProcessStake(content);
+					_homePageViewModel.ProcessedStake = processedStake;
 
 					_sb.Clear();
 					_sb.AppendLine($"Stake running at: {DateTimeOffset.Now}");

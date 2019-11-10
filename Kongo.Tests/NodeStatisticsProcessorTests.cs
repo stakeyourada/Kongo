@@ -23,8 +23,7 @@ namespace Kongo.Tests
 		[InlineData(_nodeStatsStream1)]
 		public async Task ProcessNodeStatisticStreamWithNullLastBlockTime(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new NodeStatisticsProcessor(storage, opts);
 			var nodeStats = await _processor.ProcessNodeStatistics(value);
@@ -37,8 +36,7 @@ namespace Kongo.Tests
 		[InlineData(_nodeStatsStream2)]
 		public async Task ProcessValidNodeStatisticStream(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new NodeStatisticsProcessor(storage, opts);
 			var nodeStats = await _processor.ProcessNodeStatistics(value);
@@ -53,8 +51,7 @@ namespace Kongo.Tests
 		[InlineData("this is not a json formatted string")]
 		public void InvalidNodeStatisticStream_Throws_ArgumentException(string value)
 		{
-			var _sqliteConfiguration = new SqliteConfigurationModel() { DatabaseName = Path.GetRandomFileName() };
-			var storage = new KongoDataStorage(_sqliteConfiguration);
+			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new NodeStatisticsProcessor(storage, opts);
 			storage.Database.EnsureDeleted();
