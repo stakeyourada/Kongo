@@ -1,4 +1,4 @@
-name: .NET Core
+name: ASP.NET Core CI
 
 on: [push]
 
@@ -8,13 +8,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, ubuntu-16.04, ubuntu-18.04, macOS-latest]
         
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.0.0
+        dotnet-version: 3.0.100
     - name: Build with dotnet
       run: dotnet build --configuration Release
+    - name: Run Tests
+      run: dotnet test --configuration Release
