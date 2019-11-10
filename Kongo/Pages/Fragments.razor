@@ -8,7 +8,7 @@
 @inject KongoDataStorage _fragmentData
 
 <div class="container-fluid">
-	<h1>Fragments</h1>
+	<h1>Transactions</h1>
 	<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
 	<p>
 		<div class="row">
@@ -128,7 +128,7 @@
 
 	void RefreshHistory()
 	{
-		var allRecords = _fragmentData.Fragments.AsEnumerable();
+		var allRecords = _fragmentData.FragmentStatistics.AsEnumerable();
 		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
 
 		fragmentStatisticsHistory = filteredRecords.GroupBy(x =>
