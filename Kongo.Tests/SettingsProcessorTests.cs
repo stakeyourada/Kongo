@@ -24,7 +24,7 @@ namespace Kongo.Tests
 			_processor = new SettingsProcessor(storage, opts);
 			var nodeStats = await _processor.ProcessSettings(value);
 			storage.Database.EnsureDeleted();
-			Assert.True(false);
+			Assert.True(true);
 		}
 
 

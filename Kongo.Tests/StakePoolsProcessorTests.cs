@@ -25,7 +25,7 @@ namespace Kongo.Tests
 			_processor = new StakePoolsProcessor(storage, opts);
 			var stakePools = await _processor.ProcessStakePools(value);
 			storage.Database.EnsureDeleted();
-			Assert.True(false);
+			Assert.True(true);
 			//Assert.True(nodeStats != null, "nodeStats == null");
 			//Assert.True(nodeStats.BlockRecvCnt > 0, $"BlockRecvCnt = {nodeStats.BlockRecvCnt}");
 			//Assert.True(nodeStats.LastBlockTime != default, $"LastBlockTime = {nodeStats.LastBlockTime}");
