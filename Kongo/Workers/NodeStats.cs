@@ -23,9 +23,8 @@ namespace Kongo.Workers
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
 		private readonly KongoStatusModel _kongoStatus;
-		private readonly HomePageViewModel _homePageViewModel;
 
-		public NodeStats(ILogger<NodeStats> logger, IProcessNodeStatistics processor, KongoOptions opts, KongoStatusModel kongoStatus, HomePageViewModel homePageViewModel)
+		public NodeStats(ILogger<NodeStats> logger, IProcessNodeStatistics processor, KongoOptions opts, KongoStatusModel kongoStatus)
 		{
 			_logger = logger;
 			_httpClient = new HttpClient();
@@ -33,7 +32,6 @@ namespace Kongo.Workers
 			_sb = new StringBuilder();
 			_opts = opts;
 			_kongoStatus = kongoStatus;
-			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -70,7 +68,6 @@ namespace Kongo.Workers
 						}
 
 						var nodeStatistics = await _processor.ProcessNodeStatistics(content);
-						_homePageViewModel.NodeStatistics = nodeStatistics;
 
 						_kongoStatus.PoolState = nodeStatistics.State;
 						

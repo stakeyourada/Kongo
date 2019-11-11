@@ -29,7 +29,6 @@ namespace Kongo
 		private static KongoOptions _opts;
 		private static KongoStatusModel _kongoStatus = null;
 		private static string _dbConnectionString;
-		private static HomePageViewModel _homePageViewModel;
 
 		public static void Main(string[] args)
 		{
@@ -67,7 +66,6 @@ namespace Kongo
 					services.AddSingleton<IProcessStake, StakeProcessor>();
 
 					// Inject shared models and other services
-					services.AddSingleton<HomePageViewModel>(_homePageViewModel);
 					services.AddSingleton<KongoStatusModel>(_kongoStatus);
 
 					/* https://cmatskas.com/net-core-dependency-injection-with-constructor-parameters-2/ */
@@ -165,8 +163,6 @@ namespace Kongo
 				PoolState = "Kongo Initializing",
 				PoolUptime = TimeSpan.FromSeconds(0)
 			};
-
-			_homePageViewModel = new HomePageViewModel() { KongoStatus = _kongoStatus };
 
 			return true;
 		}

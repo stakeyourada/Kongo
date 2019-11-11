@@ -4,8 +4,7 @@
 @using Kongo.Core.Models
 @using System.Globalization
 
-@inject HomePageViewModel _homePageViewModel
-@inject KongoDataStorage _leaderEventHistory
+@inject KongoDataStorage _kongoDatabase
 
 <Row>
 	<Column>
@@ -252,7 +251,7 @@
 
 	protected override Task OnInitializedAsync()
 	{
-		_leaderEventHistory.Database.EnsureCreated();
+		_kongoDatabase.Database.EnsureCreated();
 
 		RefreshHistory();
 

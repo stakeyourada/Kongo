@@ -20,16 +20,14 @@ namespace Kongo.Workers
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
-		private readonly HomePageViewModel _homePageViewModel;
 
-		public NetworkStats(ILogger<NetworkStats> logger, IProcessNetworkStatistics processor, KongoOptions opts, HomePageViewModel homePageViewModel)
+		public NetworkStats(ILogger<NetworkStats> logger, IProcessNetworkStatistics processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
-			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -66,7 +64,6 @@ namespace Kongo.Workers
 						}
 
 						var processedNetworkStatistics = await _processor.ProcessNetworkStatistics(content);
-						_homePageViewModel.ProcessedNetworkStatistics = processedNetworkStatistics;
 
 						_sb.Clear();
 						_sb.AppendLine($"NetworkStatistics running at: {DateTimeOffset.Now}");

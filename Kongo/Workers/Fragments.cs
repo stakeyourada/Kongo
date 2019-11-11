@@ -21,16 +21,14 @@ namespace Kongo.Workers
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
-		private readonly HomePageViewModel _homePageViewModel;
 
-		public Fragments(ILogger<Fragments> logger, IProcessFragments processor, KongoOptions opts, HomePageViewModel homePageViewModel)
+		public Fragments(ILogger<Fragments> logger, IProcessFragments processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
-			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -76,7 +74,6 @@ namespace Kongo.Workers
 					}
 
 					var processedFragments = await _processor.ProcessFragments(content);
-					_homePageViewModel.ProcessedFragments = processedFragments;
 
 					_sb.Clear();
 					_sb.AppendLine($"Fragments running at: {DateTimeOffset.Now}");

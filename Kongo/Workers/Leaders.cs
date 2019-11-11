@@ -22,16 +22,14 @@ namespace Kongo.Workers
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
-		private readonly HomePageViewModel _homePageViewModel;
 
-		public Leaders(ILogger<Leaders> logger, IProcessLeaders processor, KongoOptions opts, HomePageViewModel homePageViewModel)
+		public Leaders(ILogger<Leaders> logger, IProcessLeaders processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
-			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -69,7 +67,6 @@ namespace Kongo.Workers
 					}
 
 					var processedLeaders = await _processor.ProcessLeaders(content);
-					_homePageViewModel.ProcessedLeaders = processedLeaders;
 
 					if(processedLeaders.Leaders.Count > 0)
 					{
@@ -88,7 +85,6 @@ namespace Kongo.Workers
 							content = await response.Content.ReadAsStringAsync();
 
 							var processedLeaderLogs = await _processor.ProcessLeadersLogs(content);
-							_homePageViewModel.ProcessedLeadersLogs = processedLeaderLogs;
 						}
 						catch (Exception)
 						{

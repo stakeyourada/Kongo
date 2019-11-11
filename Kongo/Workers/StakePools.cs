@@ -20,16 +20,14 @@ namespace Kongo.Workers
 		private readonly HttpClient _httpClient;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
-		private readonly HomePageViewModel _homePageViewModel;
 
-		public StakePools(ILogger<StakePools> logger, IProcessStakePools processor, KongoOptions opts, HomePageViewModel homePageViewModel)
+		public StakePools(ILogger<StakePools> logger, IProcessStakePools processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_httpClient = new HttpClient();
 			_processor = processor;
 			_sb = new StringBuilder();
 			_opts = opts;
-			_homePageViewModel = homePageViewModel;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -64,7 +62,6 @@ namespace Kongo.Workers
 					}
 
 					var processedStakePools = await _processor.ProcessStakePools(content);
-					_homePageViewModel.ProcessedStakePools = processedStakePools;
 
 					_sb.Clear();
 					_sb.AppendLine($"StakePools running at: {DateTimeOffset.Now}");
