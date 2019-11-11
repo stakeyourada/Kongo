@@ -48,6 +48,8 @@
 </div>
 
 @code {
+	const long NSPerSecond = 10000000;
+
 	TimeRangeEnum dataWindowFlag = TimeRangeEnum.OneHour;
 	int dataWindow = (int)TimeRangeEnum.OneHour;
 	int groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(TimeRangeEnum.OneHour);
@@ -57,7 +59,7 @@
 	LineChart<long> uptimeChart;
 	LineChart<long> blocksReceivedChart;
 
-	List<NodeStatisticsChartModel> nodeStatisticsHistory;
+	IEnumerable<NodeStatisticsChartModel> nodeStatisticsHistory;
 
 	protected override Task OnInitializedAsync()
 	{
@@ -133,6 +135,7 @@
 			var stamp = x.Timestamp;
 			stamp = stamp.AddMinutes(-(stamp.Minute % groupInterval));
 			stamp = stamp.AddMilliseconds(-stamp.Millisecond - 1000 * stamp.Second);
+			stamp = stamp.AddTicks(-(stamp.UtcTicks % NSPerSecond));			
 			return stamp;
 		})
 		.Select(g => new NodeStatisticsChartModel {
@@ -142,7 +145,7 @@
 			BlockRecvCnt = g.Max(s => s.BlockRecvCnt),
 			LastBlockHeight = g.Max(s => s.LastBlockHeight),
 			UpTime = g.Max(s => s.UpTime)
-		}).ToList();
+		});
 
 		//foreach (var stat in nodeStatisticsHistory)
 		//{

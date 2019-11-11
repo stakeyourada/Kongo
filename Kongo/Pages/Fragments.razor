@@ -59,6 +59,8 @@
 
 
 @code {
+	const long NSPerSecond = 10000000;
+
 	TimeRangeEnum dataWindowFlag = TimeRangeEnum.OneHour;
 	int dataWindow = (int)TimeRangeEnum.OneHour;
 	int groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(TimeRangeEnum.OneHour);
@@ -69,7 +71,7 @@
 	LineChart<long> receviedFromNetworkChart;
 	LineChart<long> receviedFromRestChart;
 
-	List<StoredFragmentsModel> fragmentStatisticsHistory;
+	IEnumerable<StoredFragmentsModel> fragmentStatisticsHistory;
 
 	protected override Task OnInitializedAsync()
 	{
@@ -136,6 +138,7 @@
 			var stamp = x.Timestamp;
 			stamp = stamp.AddMinutes(-(stamp.Minute % groupInterval));
 			stamp = stamp.AddMilliseconds(-stamp.Millisecond - 1000 * stamp.Second);
+			stamp = stamp.AddTicks(-(stamp.UtcTicks % NSPerSecond));
 			return stamp;
 		})
 		.Select(g => new StoredFragmentsModel
@@ -146,8 +149,7 @@
 			FragmentsPending = (long)g.Max(s => s.FragmentsPending),
 			FragmentsReceviedFromNetwork = (long)g.Max(s => s.FragmentsReceviedFromNetwork),
 			FragmentsReceviedFromRest = (long)g.Max(s => s.FragmentsReceviedFromRest)
-		})
-		.ToList();
+		});
 	}
 
 	LineChartDataset<long> GetTotalFragments()
