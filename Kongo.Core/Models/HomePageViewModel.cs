@@ -7,7 +7,7 @@ namespace Kongo.Core.Models
 	public class HomePageViewModel
 	{
 		public KongoStatusModel KongoStatus { get; set; }
-		public ProcessedFragmentsModel ProcessedFragments { get; set; }
+		public StoredFragmentsModel ProcessedFragments { get; set; }
 		public ProcessedLeadersLogsModel ProcessedLeadersLogs { get; set; }
 		public ProcessedLeadersModel ProcessedLeaders { get; set; }
 		public ProcessedLogModel ProcessedLog { get; set; }

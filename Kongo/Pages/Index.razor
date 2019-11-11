@@ -19,7 +19,7 @@
 						</Row>
 						<Row>
 							<small>
-								Last run at: 11/9/2019 7:35:00 PM +00:00
+								Last run at: @_homePageModel.NodeStatistics?.Timestamp.ToUniversalTime();
 							</small>
 						</Row>
 					</CardHeader>
@@ -28,43 +28,43 @@
 							<TableBody>
 								<TableRow>
 									<TableRowCell>BlockRecvCnt</TableRowCell>
-									<TableRowCell>45959</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.BlockRecvCnt</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>LastBlockDate</TableRowCell>
-									<TableRowCell>11.1586</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockDate</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>LastBlockFees</TableRowCell>
-									<TableRowCell>3300</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockFees</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>LastBlockHash</TableRowCell>
-									<TableRowCell>0a16859b4205fb2bfb4d26acdee8a1bcf91478875892242d5e3db49d1d8220c6</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockHash</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>LastBlockHeight</TableRowCell>
-									<TableRowCell>7669</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockHeight</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>lastBlockSum</TableRowCell>
-									<TableRowCell>3600</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.lastBlockSum</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>LastBlockTime</TableRowCell>
-									<TableRowCell>11/9/2019 7:34:38 PM +00:00</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockTime</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>LastBlockTx</TableRowCell>
-									<TableRowCell>3</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockTx</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>TxRecvCnt</TableRowCell>
-									<TableRowCell>27954</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.TxRecvCnt</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell>Uptime</TableRowCell>
-									<TableRowCell>73809</TableRowCell>
+									<TableRowCell>@_homePageModel.NodeStatistics?.Uptime</TableRowCell>
 								</TableRow>
 							</TableBody>
 						</Table>
@@ -82,7 +82,7 @@
 						</Row>
 						<Row>
 							<small>
-								Last run at: 11/9/2019 8:47:08 PM +00:00
+								Last run at: @_homePageModel.ProcessedFragments?.Timestamp.ToUniversalTime()
 							</small>
 						</Row>
 					</CardHeader>
@@ -91,7 +91,7 @@
 							<TableBody>
 								<TableRow>
 									<TableRowCell><strong>Total Fragments:</strong></TableRowCell>
-									<TableRowCell>4813</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.TotalFragments</TableRowCell>
 									<TableRowCell></TableRowCell>
 								</TableRow>
 							</TableBody>
@@ -109,12 +109,12 @@
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Rest</TableRowCell>
-									<TableRowCell>0</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsReceviedFromRest</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Network</TableRowCell>
-									<TableRowCell>4810</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsReceviedFromNetwork</TableRowCell>
 								</TableRow>
 							</TableBody>
 						</Table>
@@ -131,12 +131,12 @@
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Pending</TableRowCell>
-									<TableRowCell>3</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsPending</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>InABlock</TableRowCell>
-									<TableRowCell>4810</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsInBlock</TableRowCell>
 								</TableRow>
 							</TableBody>
 						</Table>
@@ -156,7 +156,7 @@
 						</Row>
 						<Row>
 							<small>
-								Last run at: 11/9/2019 8:56:38 PM +00:00
+								Last run at: @_homePageModel.ProcessedNetworkStatistics?.Timestamp.ToUniversalTime()
 							</small>
 						</Row>
 					</CardHeader>
@@ -165,7 +165,7 @@
 							<TableBody>
 								<TableRow>
 									<TableRowCell><strong>Total Established Connections:</strong></TableRowCell>
-									<TableRowCell>167</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.TotalEstablishedConnections</TableRowCell>
 									<TableRowCell></TableRowCell>
 								</TableRow>
 								<TableRow>
@@ -176,17 +176,17 @@
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Block Received:</TableRowCell>
-									<TableRowCell>11/9/2019 8:56:29 PM +00:00</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastBlockReceivedAt.Value.ToUniversalTime()</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Fragment Received:</TableRowCell>
-									<TableRowCell>11/9/2019 8:56:30 PM +00:00</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastFragmentReceivedAt.Value.ToUniversalTime()</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Gossip Received:</TableRowCell>
-									<TableRowCell>11/9/2019 8:56:37 PM +00:00</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastGossipReceivedAt.Value.ToUniversalTime()</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
@@ -201,17 +201,17 @@
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Nodes Sending Block</TableRowCell>
-									<TableRowCell>142</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.BlocksReceivedInPast30Min</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Nodes Sending Fragments</TableRowCell>
-									<TableRowCell>146</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.FragmentsReceivedInPast30Min</TableRowCell>
 								</TableRow>
 								<TableRow>
 									<TableRowCell></TableRowCell>
 									<TableRowCell>Nodes Gossiping</TableRowCell>
-									<TableRowCell>147</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.GossipReceivedInPast30Min</TableRowCell>
 								</TableRow>
 
 							</TableBody>
@@ -247,7 +247,7 @@
 
 @code {
 
-	List<LeadersLogsModel> fragmentStatisticsHistory;
+	HomePageViewModel _homePageModel = new HomePageViewModel();
 
 	protected override Task OnInitializedAsync()
 	{
@@ -270,13 +270,47 @@
 	{
 		RefreshHistory();
 
+
+
 		return Task.FromResult(true);
+	}
+
+
+	StoredFragmentsModel GetLastFragmentsSummary()
+	{
+		var records = _kongoDatabase.FragmentStatistics.AsEnumerable();
+		if (records.Skip(1).Any())
+		{
+			return records.OrderBy(r => r.Id).Last();
+		}
+		return null;
+	}
+
+	ProcessedNetworkStatisticsModel GetLastNetworkSummary()
+	{
+		var records = _kongoDatabase.NetworkStatistics.AsEnumerable();
+		if (records.Skip(1).Any())
+		{
+			return records.OrderBy(r => r.Id).Last();
+		}
+		return null;
+	}
+
+	NodeStatisticsModel GetLastNodeStatsSummary()
+	{
+		var records = _kongoDatabase.NodeStatisticEntries.AsEnumerable();
+		if (records.Skip(1).Any())
+		{
+			return records.OrderBy(r => r.Id).Last();
+		}
+		return null;
 	}
 
 	void RefreshHistory()
 	{
-		//var allRecords = _fragmentData.LeaderEventHistory.AsEnumerable();
-		//var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
+		_homePageModel.ProcessedFragments = GetLastFragmentsSummary();
+		_homePageModel.ProcessedNetworkStatistics = GetLastNetworkSummary();
+		_homePageModel.NodeStatistics = GetLastNodeStatsSummary();
 	}
 
 }
