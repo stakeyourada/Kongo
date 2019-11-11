@@ -60,7 +60,7 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.Node_id).HasMaxLength(64);
 				b.Property(e => e.Peer_addr).IsRequired().HasMaxLength(25);
 				b.Property(e => e.Task).IsRequired().HasMaxLength(30);
-				b.Property(e => e.Reason).IsRequired(false).HasMaxLength(255);
+				b.Property(e => e.Reason).IsRequired(false).HasMaxLength(255);				
 				b.ToTable("LogEntries");
 			});
 

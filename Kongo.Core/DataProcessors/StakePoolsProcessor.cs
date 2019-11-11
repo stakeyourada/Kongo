@@ -22,7 +22,7 @@ namespace Kongo.Core.DataProcessors
 		public StakePoolsProcessor(KongoDataStorage database, KongoOptions opts)
 		{
 			_database = database;
-			_database.Database.EnsureCreated();
+			//_database.Database.EnsureCreated();
 			_database.Database.Migrate();
 			_opts = opts;
 		}
