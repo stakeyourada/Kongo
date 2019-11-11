@@ -93,7 +93,7 @@
 	DateTimeOffset lastFragmentReceivedAt;
 	DateTimeOffset lastGossipReceivedAt;
 
-	IEnumerable<ProcessedNetworkStatisticsModel> networkStatisticsHistory;
+	List<ProcessedNetworkStatisticsModel> networkStatisticsHistory;
 
 	protected override Task OnInitializedAsync()
 	{
@@ -176,7 +176,7 @@
 			LastBlockReceivedAt = g.Max(s => s.LastBlockReceivedAt),
 			LastFragmentReceivedAt = g.Max(s => s.LastFragmentReceivedAt),
 			LastGossipReceivedAt = g.Max(s => s.LastGossipReceivedAt)
-		});
+		}).ToList();
 	}
 
 	LineChartDataset<int> GetEstablishedConnections()

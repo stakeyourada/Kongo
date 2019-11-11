@@ -59,7 +59,7 @@
 	LineChart<long> uptimeChart;
 	LineChart<long> blocksReceivedChart;
 
-	IEnumerable<NodeStatisticsChartModel> nodeStatisticsHistory;
+	List<NodeStatisticsChartModel> nodeStatisticsHistory;
 
 	protected override Task OnInitializedAsync()
 	{
@@ -145,7 +145,7 @@
 			BlockRecvCnt = g.Max(s => s.BlockRecvCnt),
 			LastBlockHeight = g.Max(s => s.LastBlockHeight),
 			UpTime = g.Max(s => s.UpTime)
-		});
+		}).ToList();
 
 		//foreach (var stat in nodeStatisticsHistory)
 		//{

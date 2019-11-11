@@ -71,11 +71,11 @@
 	LineChart<long> receviedFromNetworkChart;
 	LineChart<long> receviedFromRestChart;
 
-	IEnumerable<StoredFragmentsModel> fragmentStatisticsHistory;
+	List<StoredFragmentsModel> fragmentStatisticsHistory;
 
 	protected override Task OnInitializedAsync()
 	{
-		_fragmentData.Database.EnsureCreated();
+		//_fragmentData.Database.Migrate();
 
 		// set this value so the UI renders the active button correctly on first render
 		dataWindowFlag = _statusModel.CurrentChartTimeframe;
@@ -149,7 +149,7 @@
 			FragmentsPending = (long)g.Max(s => s.FragmentsPending),
 			FragmentsReceviedFromNetwork = (long)g.Max(s => s.FragmentsReceviedFromNetwork),
 			FragmentsReceviedFromRest = (long)g.Max(s => s.FragmentsReceviedFromRest)
-		});
+		}).ToList();
 	}
 
 	LineChartDataset<long> GetTotalFragments()
