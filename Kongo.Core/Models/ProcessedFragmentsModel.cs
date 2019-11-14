@@ -13,9 +13,11 @@ namespace Kongo.Core.Models
 		public long FragmentsReceviedFromNetwork { get; set; }
 		public IEnumerable<FragmentModel> NetworkFragments { get; set; }
 		public long FragmentsInBlock { get; set; }
-		public IEnumerable<FragmentModel> BlockFragments { get; set; }
+		public IEnumerable<InBlockFragmentModel> BlockFragments { get; set; }
+		public long FragmentsRejected { get; set; }
+		public IEnumerable<RejectedFragmentModel> RejectedFragments { get; set; }
 		public long FragmentsPending { get; set; }
-		public IEnumerable<FragmentModel> PendingFragments { get; set; }
+		public IEnumerable<PendingFragmentModel> PendingFragments { get; set; }
 		public long TotalFragments { get; set; }
 	}
 }

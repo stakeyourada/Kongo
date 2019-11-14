@@ -29,10 +29,18 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-sm-3 col-md-6">
-					<LineChart @ref="inBlockChart" TItem="long" />
+					<LineChart @ref="totalFragmentsChart" TItem="long" />
 				</div>
 				<div class="col-sm-9 col-md-6">
 					<LineChart @ref="pendingChart" TItem="long" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-3 col-md-6">
+					<LineChart @ref="inBlockChart" TItem="long" />
+				</div>
+				<div class="col-sm-9 col-md-6">
+					<LineChart @ref="rejectedChart" TItem="long" />
 				</div>
 			</div>
 			<div class="row">
@@ -41,15 +49,6 @@
 				</div>
 				<div class="col-sm-9 col-md-6">
 					<LineChart @ref="receviedFromRestChart" TItem="long" />
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-2">
-				</div>
-				<div class="col-md-6 col-md-8">
-					<LineChart @ref="totalFragmentsChart" TItem="long" />
-				</div>
-				<div class="col-md-2">
 				</div>
 			</div>
 		</div>
@@ -67,6 +66,7 @@
 
 	LineChart<long> totalFragmentsChart;
 	LineChart<long> inBlockChart;
+	LineChart<long> rejectedChart;
 	LineChart<long> pendingChart;
 	LineChart<long> receviedFromNetworkChart;
 	LineChart<long> receviedFromRestChart;
@@ -104,6 +104,7 @@
 	{
 		totalFragmentsChart.Clear();
 		inBlockChart.Clear();
+		rejectedChart.Clear();
 		pendingChart.Clear();
 		receviedFromNetworkChart.Clear();
 		receviedFromRestChart.Clear();
@@ -114,6 +115,8 @@
 		totalFragmentsChart.AddDataSet(GetTotalFragments());
 		inBlockChart.AddLabel(fragmentStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
 		inBlockChart.AddDataSet(GetFragmentsInBlock());
+		rejectedChart.AddLabel(fragmentStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
+		rejectedChart.AddDataSet(GetFragmentsRejected());
 		pendingChart.AddLabel(fragmentStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
 		pendingChart.AddDataSet(GetFragmentsPending());
 		receviedFromNetworkChart.AddLabel(fragmentStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
@@ -123,6 +126,7 @@
 
 		await totalFragmentsChart.Update();
 		await inBlockChart.Update();
+		await rejectedChart.Update();
 		await pendingChart.Update();
 		await receviedFromNetworkChart.Update();
 		await receviedFromRestChart.Update();
@@ -146,6 +150,7 @@
 			Timestamp = g.Key,
 			TotalFragments = (long)g.Max(s => s.TotalFragments),
 			FragmentsInBlock = (long)g.Max(s => s.FragmentsInBlock),
+			FragmentsRejected = (long)g.Max(s => s.FragmentsRejected),
 			FragmentsPending = (long)g.Max(s => s.FragmentsPending),
 			FragmentsReceviedFromNetwork = (long)g.Max(s => s.FragmentsReceviedFromNetwork),
 			FragmentsReceviedFromRest = (long)g.Max(s => s.FragmentsReceviedFromRest)
@@ -174,6 +179,20 @@
 			Data = fragmentStatisticsHistory.Select(p => p.FragmentsInBlock).ToList(),
 			BackgroundColor = backgroundColors_FragmentsInBlock,
 			BorderColor = borderColors_FragmentsInBlock,
+			Fill = true,
+			PointRadius = 2,
+			BorderDash = new List<int> { }
+		};
+	}
+	
+	LineChartDataset<long> GetFragmentsRejected()
+	{
+		return new LineChartDataset<long>
+		{
+			Label = "Rejected",
+			Data = fragmentStatisticsHistory.Select(p => p.FragmentsRejected).ToList(),
+			BackgroundColor = backgroundColors_FragmentsRejected,
+			BorderColor = borderColors_FragmentsRejected,
 			Fill = true,
 			PointRadius = 2,
 			BorderDash = new List<int> { }
@@ -222,20 +241,23 @@
 		};
 	}
 
-	List<string> backgroundColors_TotalFragments = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
-	List<string> borderColors_TotalFragments = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+	List<string> backgroundColors_TotalFragments = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
+	List<string> borderColors_TotalFragments = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
 
 	List<string> backgroundColors_FragmentsInBlock = new List<string> { ChartColor.FromRgba(255, 99, 237, 0.2f) };
 	List<string> borderColors_FragmentsInBlock = new List<string> { ChartColor.FromRgba(255, 99, 237, 1f) };
 
-	List<string> backgroundColors_FragmentsPending = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
-	List<string> borderColors_FragmentsPending = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+	List<string> backgroundColors_FragmentsRejected = new List<string> { ChartColor.FromRgba(255, 99, 200, 0.2f) };
+	List<string> borderColors_FragmentsRejected = new List<string> { ChartColor.FromRgba(255, 0, 0, 1f) };
+
+	List<string> backgroundColors_FragmentsPending = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
+	List<string> borderColors_FragmentsPending = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
 
 	List<string> backgroundColors_FragmentsReceviedFromNetwork = new List<string> { ChartColor.FromRgba(255, 99, 237, 0.2f) };
 	List<string> borderColors_FragmentsReceviedFromNetwork = new List<string> { ChartColor.FromRgba(255, 99, 237, 1f) };
 
-	List<string> backgroundColors_FragmentsReceviedFromRest = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
-	List<string> borderColors_FragmentsReceviedFromRest = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+	List<string> backgroundColors_FragmentsReceviedFromRest = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
+	List<string> borderColors_FragmentsReceviedFromRest = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
 
 	async Task OnTimeRangeClicked(TimeRangeEnum range)
 	{

@@ -4,6 +4,7 @@ using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,21 +35,79 @@ namespace Kongo.Core.DataProcessors
 		{
 			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 
-			var fragments = JsonConvert.DeserializeObject<List<FragmentModel>>(jsonContent);
+			var fragments = JsonConvert.DeserializeObject<List<FragmentModel>>(jsonContent).ToList();
 
 			var restFragments = fragments.Where(fragment => fragment.Received_from.Equals("Rest"));
 			var networkFragments = fragments.Where(fragment => fragment.Received_from.Equals("Network"));
 
-			// hotdog or not a hotdog - either a string (Pending) or object (InBlock)
-			var blockFragments = fragments.Where(f => f.Status.GetType() != typeof(string));
-			var pendingFragments = fragments.Where(f => f.Status.GetType() == typeof(string));
+			List<FragmentModel> unknownFragments = new List<FragmentModel>();
+			List<PendingFragmentModel> pendingFragments = new List<PendingFragmentModel>();
+			List<InBlockFragmentModel> inBlockFragments = new List<InBlockFragmentModel>();
+			List<RejectedFragmentModel> rejectedFragments = new List<RejectedFragmentModel>();
+
+			foreach (var fragment in fragments)
+			{
+				var statusType = fragment.Status.GetType();
+
+				if (statusType == typeof(string))
+				{
+					pendingFragments.Add(
+						new PendingFragmentModel
+						{
+							Fragment_id = fragment.Fragment_id,
+							Last_updated_at = fragment.Last_updated_at,
+							Received_at = fragment.Received_at,
+							Received_from = fragment.Received_from,
+							Status = (string)fragment.Status
+						});
+					continue;
+				}
+				if (statusType == typeof(JObject))
+				{
+					var json = fragment.Status.ToString(Formatting.None);
+					
+					var blockStatus = JsonConvert.DeserializeObject<InABlockStatus>(json);
+					var rejectedStatus = JsonConvert.DeserializeObject<RejectedStatus>(json);
+
+					if ( blockStatus.InABlock != null)
+					{
+						inBlockFragments.Add(
+							new InBlockFragmentModel
+							{
+								Fragment_id = fragment.Fragment_id,
+								Last_updated_at = fragment.Last_updated_at,
+								Received_at = fragment.Received_at,
+								Received_from = fragment.Received_from,
+								Status = blockStatus.InABlock
+							});
+					} 
+					else
+					{
+						if ( rejectedStatus.Rejected != null)
+						{
+							rejectedFragments.Add(
+								new RejectedFragmentModel
+								{
+									Fragment_id = fragment.Fragment_id,
+									Last_updated_at = fragment.Last_updated_at,
+									Received_at = fragment.Received_at,
+									Received_from = fragment.Received_from,
+									Status = rejectedStatus.Rejected
+								});
+						} else
+						{
+							unknownFragments.Add(fragment);
+						}
+					}
+				}
+			}
 
 			var totalFragments = fragments.Count();
 			var fragmentsReceviedFromRest = restFragments.Count();
 			var fragmentsReceviedFromNetwork = networkFragments.Count();
 
-			// hotdog or not a hotdog - either a string or object (InBlock)
-			var fragmentsInBlock = blockFragments.Count();
+			var fragmentsInBlock = inBlockFragments.Count();
+			var fragmentsRejected = rejectedFragments.Count();
 			var fragmentsPending = pendingFragments.Count();
 
 			var result = new ProcessedFragmentsModel()
@@ -60,7 +119,8 @@ namespace Kongo.Core.DataProcessors
 				FragmentsReceviedFromNetwork = fragmentsReceviedFromNetwork,
 				NetworkFragments = networkFragments,
 				FragmentsInBlock = fragmentsInBlock,
-				BlockFragments = blockFragments,
+				FragmentsRejected = fragmentsRejected,
+				BlockFragments = inBlockFragments,
 				FragmentsPending = fragmentsPending,
 				PendingFragments = pendingFragments
 			};
@@ -73,6 +133,7 @@ namespace Kongo.Core.DataProcessors
 				FragmentsReceviedFromRest = result.FragmentsReceviedFromRest,
 				FragmentsReceviedFromNetwork = result.FragmentsReceviedFromNetwork,
 				FragmentsInBlock = result.FragmentsInBlock,
+				FragmentsRejected = result.FragmentsRejected,
 				FragmentsPending = result.FragmentsPending,
 			});
 			

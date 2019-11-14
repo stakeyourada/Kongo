@@ -70,7 +70,7 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.Id).ValueGeneratedOnAdd();
 				b.Property(e => e.Timestamp).IsRequired(true);
 				b.Property(e => e.BlockRecvCnt);
-				b.Property(e => e.LastBlockDate).HasMaxLength(20);
+				b.Property(e => e.LastBlockDate).IsRequired(true).HasMaxLength(20);
 				b.Property(e => e.LastBlockFees);
 				b.Property(e => e.LastBlockHash).HasMaxLength(64);
 				b.Property(e => e.LastBlockHeight).HasMaxLength(20);
@@ -91,6 +91,7 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.FragmentsReceviedFromRest);
 				b.Property(e => e.FragmentsReceviedFromNetwork);
 				b.Property(e => e.FragmentsInBlock);
+				b.Property(e => e.FragmentsRejected);
 				b.Property(e => e.FragmentsPending);
 				b.Property(e => e.TotalFragments);
 				b.ToTable("FragmentStatistics");
