@@ -35,13 +35,17 @@ namespace Kongo.Core.DataProcessors
 			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 
 			var nodeStats = JsonConvert.DeserializeObject<NodeStatisticsModel>(jsonContent);
-			
+
 			if (!nodeStats.LastBlockTime.HasValue)
 				nodeStats.LastBlockTime = _opts.ApplicationStartedOn;
 
 			nodeStats.Timestamp = DateTimeOffset.UtcNow;
-			_database.NodeStatisticEntries.Add(nodeStats);
-			_database.SaveChanges();
+
+			if (!string.IsNullOrEmpty(nodeStats.LastBlockDate) && nodeStats.LastBlockTime.HasValue)
+			{
+				_database.NodeStatisticEntries.Add(nodeStats);
+				_database.SaveChanges();
+			}
 
 			return Task.FromResult(nodeStats);
 		}

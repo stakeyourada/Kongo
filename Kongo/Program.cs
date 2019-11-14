@@ -71,19 +71,25 @@ namespace Kongo
 					/* https://cmatskas.com/net-core-dependency-injection-with-constructor-parameters-2/ */
 					services.AddTransient<KongoDataStorage>(s => new KongoDataStorage(_dbConnectionString));
 
-					// configure workers
-					if (_opts.NodeStats)
-						services.AddHostedService<NodeStats>();
-					if (_opts.FragmentLogs)
-						services.AddHostedService<Fragments>();
-					if (_opts.NetworkStats)
-						services.AddHostedService<NetworkStats>();
-					if (_opts.LeaderLogs)
-						services.AddHostedService<Leaders>();
-					if (_opts.StakeDistribution)
-						services.AddHostedService<Stake>();
-					if (_opts.StakePools)
-						services.AddHostedService<StakePools>();
+					// can opt out of all data collection and just run as website
+					if(!_opts.DisableDataCollection)
+					{
+						// configure data collection workers
+						if (!_opts.NodeStats)
+							services.AddHostedService<NodeStats>();
+						if (!_opts.FragmentLogs)
+							services.AddHostedService<Fragments>();
+						if (!_opts.NetworkStats)
+							services.AddHostedService<NetworkStats>();
+						if (!_opts.LeaderLogs)
+							services.AddHostedService<Leaders>();
+						if (!_opts.StakeDistribution)
+							services.AddHostedService<Stake>();
+						if (!_opts.StakePools)
+							services.AddHostedService<StakePools>();
+					}
+
+					services.AddHostedService<Maintenance>();
 
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
