@@ -50,7 +50,7 @@ namespace Kongo
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)
+			Host.CreateDefaultBuilder(args)			
 				.ConfigureServices((hostContext, services) =>
 				{
 					// Configuration
@@ -94,6 +94,10 @@ namespace Kongo
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
+					if(!string.IsNullOrEmpty(_opts.ServerUrls))
+					{
+						webBuilder.UseUrls(_opts.ServerUrls.Split(';', StringSplitOptions.RemoveEmptyEntries));
+					}					
 					webBuilder.UseStartup<Startup>();
 				});
 

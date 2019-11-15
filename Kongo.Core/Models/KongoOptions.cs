@@ -10,6 +10,9 @@ namespace Kongo.Core.Models
 	/// </summary>
 	public class KongoOptions
 	{
+		[Option('p', "pool-name", Required = true, HelpText = @"Stakepool Title name")]
+		public string PoolName { get; set; }
+
 		[Option('r', "rest-uri", Required = true, HelpText = @"Rest endpoint URI, e.g. http://127.0.0.1:3101")]
 		public string RestUri { get; set; }
 
@@ -46,6 +49,9 @@ namespace Kongo.Core.Models
 		[Option("disable-all-collectors", Required = false, HelpText = "Disable all data collection workers")]
 		public bool DisableDataCollection { get; set; }
 
+		[Option("server.urls", Required = false, HelpText = "ASP.NET endpoint urls")]
+		public string ServerUrls { get; set; }
+
 		[Option('v', "verbose", Required = false, HelpText = "Verbose output")]
 		public bool Verbose { get; set; }
 		
@@ -54,6 +60,7 @@ namespace Kongo.Core.Models
 		[Usage(ApplicationAlias = "Kongo")]
 		public static IEnumerable<Example> Examples =>
 			new List<Example>() {
+				new Example("\r\nSpecify name of Stakepool", new KongoOptions { PoolName = @"StakeYourAda.com" }),
 				new Example("\r\nSpecify uri of Rest endpoint", new KongoOptions { RestUri = @"http://127.0.0.1:3101" }),
 				new Example("\r\nSpecify path to node secrets configuration file", new KongoOptions { NodeSecrets = @".\node-secrets.yaml" }),
 				new Example("\r\nSpecify folder path to Kongo.SQlite datbase", new KongoOptions { DatabasePath = @".\" }),
@@ -66,6 +73,7 @@ namespace Kongo.Core.Models
 				new Example("\r\nDisable collection of Pools settings", new KongoOptions { PoolSettings = true }),
 				new Example("\r\nDisable collection of Stake Pools list", new KongoOptions { StakePools = true }),
 				new Example("\r\nDisable collection of Stake Distribution", new KongoOptions { StakeDistribution = true }),
+				new Example("\r\nASP.NET Core endpoint urls", new KongoOptions { ServerUrls = "http://localhost:5100;http://localhost:5101;http://*:5102" }),
 				new Example("\r\nVerbose output, including raw rest response", new KongoOptions { Verbose = true })
 			};
 
