@@ -1,0 +1,125 @@
+﻿@page "/leaders"
+
+@using Kongo.Core.DataServices
+@using Kongo.Core.Models
+@using Newtonsoft.Json;
+@using System.Globalization
+
+@inject KongoStatusModel _statusModel
+@inject KongoDataStorage _database
+
+<div class="container-fluid">
+	<h1>Stake Pools</h1>
+	<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
+	<div class="container-fluid">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-3 col-md-12">
+					<Card Margin="Margin.Is1.FromBottom">
+						<CardHeader>
+							<Row>
+								<strong>
+									Leader Event Schedule:
+								</strong>
+							</Row>
+							<Row>
+								<small>
+									Last run at: @leadersUpdatedAt.ToUniversalTime();
+								</small>
+							</Row>
+						</CardHeader>
+						<CardBody>
+							<Table IsNarrow="true" IsHoverable="true">
+								<TableHeader>
+									<TableRow>
+										<TableHeaderCell>Leader Id</TableHeaderCell>
+										<TableHeaderCell>Created time</TableHeaderCell>
+										<TableHeaderCell>Finished time</TableHeaderCell>
+										<TableHeaderCell>Scheduled date</TableHeaderCell>
+										<TableHeaderCell>Scheduled time</TableHeaderCell>
+										<TableHeaderCell>Status</TableHeaderCell>
+										<TableHeaderCell>Block</TableHeaderCell>
+										<TableHeaderCell>Chain length</TableHeaderCell>
+										<TableHeaderCell>Wake time</TableHeaderCell>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									@foreach (var leaderlog in leadersLogs)
+									{
+									<TableRow>
+
+										<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
+										<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+										<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Status</TableRowCell>
+										<TableRowCell>@leaderlog.Block</TableRowCell>
+										<TableRowCell>@leaderlog.Chain_length</TableRowCell>
+										<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
+									</TableRow>
+									}
+								</TableBody>
+							</Table>
+						</CardBody>
+					</Card>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@code {
+
+	DateTimeOffset leadersUpdatedAt;
+	List<StoredLeadersLogsModel> leadersLogs;
+
+	protected override Task OnInitializedAsync()
+	{
+		RefreshHistory();
+
+		return Task.FromResult(true);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await HandleRedraw();
+		}
+	}
+
+	Task HandleRedraw()
+	{
+		//totalFragmentsChart.Clear();
+
+		RefreshHistory();
+
+		//totalFragmentsChart.AddLabel(fragmentStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
+		//totalFragmentsChart.AddDataSet(GetTotalFragments());
+
+		//await totalFragmentsChart.Update();
+		return Task.FromResult(true);
+	}
+
+	void RefreshHistory()
+	{
+		var processedLeadersLogs = GetLeadersLogs();
+		leadersLogs = JsonConvert.DeserializeObject<List<StoredLeadersLogsModel>>(processedLeadersLogs.LeadersLogsJson);
+		leadersUpdatedAt = processedLeadersLogs.Timestamp;
+	}
+
+	ProcessedLeadersLogsModel GetLeadersLogs()
+	{
+		var records = _database.LeadersLogs.AsEnumerable();
+		if (records.Skip(1).Any())
+		{
+			return records.OrderBy(r => r.Id).Last();
+		}
+		return null;
+	}
+
+}

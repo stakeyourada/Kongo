@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
 namespace Kongo.Core.DataProcessors
@@ -70,24 +71,63 @@ namespace Kongo.Core.DataProcessors
 			
 			var leadersLogs = JsonConvert.DeserializeObject<List<LeadersLogsModel>>(jsonContent);
 
+			var parsedLeadersLogs = new List<StoredLeadersLogsModel>();
+
+			foreach (var leaderlog in leadersLogs)
+			{
+				var statusType = leaderlog.Status.GetType();
+
+				if (statusType == typeof(string))
+				{
+					parsedLeadersLogs.Add(
+						new StoredLeadersLogsModel
+						{
+							Created_at_time = leaderlog.Created_at_time,
+							Enclave_leader_id = leaderlog.Enclave_leader_id,
+							Scheduled_at_date = leaderlog.Scheduled_at_date,
+							Finished_at_time = leaderlog.Finished_at_time,
+							Scheduled_at_time = leaderlog.Scheduled_at_time,
+							Status = (string)leaderlog.Status,
+							Block = null,
+							Chain_length = null,
+							Wake_at_time = leaderlog.Wake_at_time
+						});
+					continue;
+				}
+				if (statusType == typeof(JObject))
+				{
+					var json = leaderlog.Status.ToString(Formatting.None);
+
+					BlockStatus blockStatus = JsonConvert.DeserializeObject<BlockStatus>(json);
+
+					if (blockStatus.Block != null)
+					{
+						parsedLeadersLogs.Add(
+							new StoredLeadersLogsModel
+							{
+								Created_at_time = leaderlog.Created_at_time,
+								Enclave_leader_id = leaderlog.Enclave_leader_id,
+								Scheduled_at_date = leaderlog.Scheduled_at_date,
+								Finished_at_time = leaderlog.Finished_at_time,
+								Scheduled_at_time = leaderlog.Scheduled_at_time,
+								Status = "Block",
+								Block = blockStatus.Block.Block,
+								Chain_length = blockStatus.Block.Chain_length,
+								Wake_at_time = leaderlog.Wake_at_time
+							});
+					}					
+				}
+			}
+
 			var result = new ProcessedLeadersLogsModel()
 			{
 				Timestamp = DateTimeOffset.UtcNow,
-				LeadersLogs = new List<LeadersLogsModel>()
+				LeadersLogsJson = JsonConvert.SerializeObject(parsedLeadersLogs, Formatting.None)
 			};
 
-			foreach (var log in leadersLogs)
-			{
-				result.LeadersLogs.Add(log);
-			}
-
-			//// SQL Lite can't map IEnum or dynamic objects, so trim to just the aggregate counts
-			//_database.Leaders.Add(new StoredLeadersModel
-			//{
-			//	Timestamp = result.Timestamp				
-			//});
-
-			//_database.SaveChanges();
+			// SQL Lite can't map IEnum or dynamic objects, so store as json
+			_database.LeadersLogs.Add(result);
+			_database.SaveChanges();
 
 			// return ProcessedFragmentsModel result
 			return Task.FromResult(result);

@@ -43,6 +43,8 @@ namespace Kongo.Core.DataServices
 		public DbSet<NodeStatisticsModel> NodeStatisticEntries { get; set; }
 		public DbSet<StoredFragmentsModel> FragmentStatistics { get; set; }
 		public DbSet<ProcessedNetworkStatisticsModel> NetworkStatistics { get; set; }
+		public DbSet<ProcessedLeadersLogsModel> LeadersLogs { get; set; }
+
 		public bool InsideLINQPad { get; private set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -110,6 +112,15 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.LastFragmentReceivedAt);
 				b.Property(e => e.LastGossipReceivedAt);
 				b.ToTable("NetworkStatistics");
+			});
+
+			modelBuilder.Entity<ProcessedLeadersLogsModel>(b =>
+			{
+				b.HasKey(e => e.Id);
+				b.Property(e => e.Id).ValueGeneratedOnAdd();
+				b.Property(e => e.Timestamp);
+				b.Property(e => e.LeadersLogsJson);
+				b.ToTable("LeadersLogs");
 			});
 
 		}
