@@ -16,11 +16,11 @@ namespace Kongo.Core.Models
 		[Option('r', "rest-uri", Required = true, HelpText = @"Rest endpoint URI, e.g. http://127.0.0.1:3101")]
 		public string RestUri { get; set; }
 
-		[Option('s', "node-secrets", Required = false, HelpText = "path to node secrets configuration")]
-		public string NodeSecrets { get; set; }
-
 		[Option('d', "database-path", Required = true, HelpText = "path {folder path only} to Kongo.SQlite datbase")]
 		public string DatabasePath { get; set; }
+
+		[Option("pool-id", Required = false, HelpText = "Stakepool Id to track")]
+		public string PoolId { get; set; }
 
 		[Option("disable-node-stats", Required = false, HelpText = "Disable collection of node statistics every 30 seconds")]
 		public bool NodeStats { get; set; }
@@ -62,7 +62,7 @@ namespace Kongo.Core.Models
 			new List<Example>() {
 				new Example("\r\nSpecify name of Stakepool", new KongoOptions { PoolName = @"StakeYourAda.com" }),
 				new Example("\r\nSpecify uri of Rest endpoint", new KongoOptions { RestUri = @"http://127.0.0.1:3101" }),
-				new Example("\r\nSpecify path to node secrets configuration file", new KongoOptions { NodeSecrets = @".\node-secrets.yaml" }),
+				new Example("\r\nSpecify path to node secrets configuration file", new KongoOptions { PoolId = @"8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" }),
 				new Example("\r\nSpecify folder path to Kongo.SQlite datbase", new KongoOptions { DatabasePath = @".\" }),
 				new Example("\r\nOutput verbose fragment logs", new KongoOptions { ShowFragments = true }),
 				new Example("\r\nDisable all data collection workers", new KongoOptions { DisableDataCollection = true }),

@@ -24,8 +24,6 @@ namespace Kongo
 	/// </summary>
 	public class Program
 	{
-		//private static NodeConfigurationModel _NodeConfig = null;
-		private static JObject _NodeSecrets = null;
 		private static KongoOptions _opts;
 		private static KongoStatusModel _kongoStatus = null;
 		private static string _dbConnectionString;
@@ -81,8 +79,11 @@ namespace Kongo
 							services.AddHostedService<Fragments>();
 						if (!_opts.NetworkStats)
 							services.AddHostedService<NetworkStats>();
-						if (!_opts.LeaderLogs)
-							services.AddHostedService<Leaders>();
+						if (!string.IsNullOrEmpty(_opts.PoolId))
+						{
+							if (!_opts.LeaderLogs)
+								services.AddHostedService<Leaders>();
+						}
 						if (!_opts.StakeDistribution)
 							services.AddHostedService<Stake>();
 						if (!_opts.StakePools)
@@ -113,29 +114,6 @@ namespace Kongo
 
 			YamlDotNet.Serialization.Deserializer deserializer = new Deserializer();
 			Newtonsoft.Json.JsonSerializer js = new JsonSerializer();
-
-			if (!string.IsNullOrEmpty(opts.NodeSecrets))
-			{
-				// convert YAML object to json we can work with
-				using (var r = new StreamReader(opts.NodeSecrets))
-				{
-					var yamlObject = deserializer.Deserialize(r);
-
-					using var w = new StringWriter();
-					js.Serialize(w, yamlObject);
-					string jsonText = w.ToString();
-					_NodeSecrets = JObject.Parse(jsonText);
-
-					if (opts.Verbose)
-					{
-						var currentForeground = Console.ForegroundColor;
-						Console.ForegroundColor = ConsoleColor.Cyan;
-						Console.WriteLine($"Loaded {opts.NodeSecrets}");
-						Console.WriteLine(_NodeSecrets.ToString());
-						Console.ForegroundColor = currentForeground;
-					}
-				}
-			}
 
 			// parse database path and create db connection string
 			try
