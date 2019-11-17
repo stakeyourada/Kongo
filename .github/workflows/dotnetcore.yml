@@ -22,8 +22,6 @@ jobs:
       run: dotnet test --configuration Release
     - name: Run Publish
       run: dotnet publish --configuration Release      
-    - name: Checkout code
-      uses: actions/checkout@master
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -37,4 +35,4 @@ jobs:
           - First Change
           - Second Change
         draft: false
-        prerelease: false
+        prerelease: true
