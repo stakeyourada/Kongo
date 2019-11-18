@@ -1,5 +1,8 @@
 name: ASP.NET Core CI
 
+env:
+  source_path: Kongo/src
+  
 on: [push]
 
 jobs:
@@ -16,11 +19,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.0.100
-    - name: Change to solution folder
-      run: cd /src
     - name: Build with dotnet
+      working-directory: ${{ env.source_path }}
       run: dotnet build --configuration Release
     - name: Run Tests
+      working-directory: ${{ env.source_path }}
       run: dotnet test --configuration Release
     - name: Run Publish
+      working-directory: ${{ env.source_path }}
       run: dotnet publish --configuration Release
