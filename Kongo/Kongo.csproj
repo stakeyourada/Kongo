@@ -18,12 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="configurestorage.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Blazorise.Bootstrap" Version="0.8.6.2" />
     <PackageReference Include="Blazorise.Charts" Version="0.8.6.2" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.8.6.2" />
