@@ -1,7 +1,7 @@
 name: ASP.NET Core CI
 
 env:
-  source_path: Kongo/src
+  source_path: ./src
   
 on: [push]
 
