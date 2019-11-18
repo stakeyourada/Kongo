@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using CommandLine;
 using Kongo.Core.DataProcessors;
 using Kongo.Core.DataServices;
-using Kongo.Core.Helpers;
 using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
 using Kongo.Workers;
@@ -13,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using YamlDotNet.Serialization;
 
 namespace Kongo
