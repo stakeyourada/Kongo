@@ -15,6 +15,13 @@
 
   <ItemGroup>
     <None Remove="configurestorage.bat" />
+    <None Remove="MapDataStorage.ps1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MapDataStorage.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
