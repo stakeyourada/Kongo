@@ -15,11 +15,15 @@
 
   <ItemGroup>
     <None Remove="configurestorage.bat" />
+    <None Remove="configure_cert_storage.bat" />
     <None Remove="mapdatastorage.bat" />
     <None Remove="MapDataStorage.ps1" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="configure_cert_storage.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="mapdatastorage.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
