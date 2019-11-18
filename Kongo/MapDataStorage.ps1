@@ -5,7 +5,7 @@
     Maps file shares for data storage
 
  .DESCRIPTION
-    Creates full set of release assets for Kongo Stakepool Monitoring services
+    Maps file shares for data storage
 #>
 Param(
     [Parameter(Mandatory=$true)] 
