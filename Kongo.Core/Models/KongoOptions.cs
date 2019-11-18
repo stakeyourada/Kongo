@@ -34,7 +34,7 @@ namespace Kongo.Core.Models
 		[Option("disable-fragment-logs", Required = false, HelpText = "Disable collection of fragment logs every 30 seconds")]
 		public bool FragmentLogs { get; set; }
 
-		[Option("show-fragments", Required = false, HelpText = "Show verbose list of fragment logs every 30 seconds, requires --fragment-logs")]
+		[Option("show-fragments", Required = false, HelpText = "Show verbose list of fragment logs every 30 seconds, if fragment logs are being collected")]
 		public bool ShowFragments { get; set; }
 
 		[Option("disable-leader-logs", Required = false, HelpText = "Disable collection of leaders every 30 seconds")]
@@ -62,7 +62,7 @@ namespace Kongo.Core.Models
 			new List<Example>() {
 				new Example("\r\nSpecify name of Stakepool", new KongoOptions { PoolName = @"StakeYourAda.com" }),
 				new Example("\r\nSpecify uri of Rest endpoint", new KongoOptions { RestUri = @"http://127.0.0.1:3101" }),
-				new Example("\r\nSpecify path to node secrets configuration file", new KongoOptions { PoolId = @"8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" }),
+				new Example("\r\nSpecify stakepool nodeid", new KongoOptions { PoolId = @"8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" }),
 				new Example("\r\nSpecify folder path to Kongo.SQlite datbase", new KongoOptions { DatabasePath = @".\" }),
 				new Example("\r\nOutput verbose fragment logs", new KongoOptions { ShowFragments = true }),
 				new Example("\r\nDisable all data collection workers", new KongoOptions { DisableDataCollection = true }),
