@@ -46,18 +46,18 @@
 								<TableBody>
 									@foreach (var leaderlog in leadersLogs)
 									{
-									<TableRow>
+										<TableRow>
 
-										<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
-										<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
-										<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
-										<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
-										<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
-										<TableRowCell>@leaderlog.Status</TableRowCell>
-										<TableRowCell>@leaderlog.Block</TableRowCell>
-										<TableRowCell>@leaderlog.Chain_length</TableRowCell>
-										<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
-									</TableRow>
+											<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
+											<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
+											<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
+											<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+											<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
+											<TableRowCell>@leaderlog.Status</TableRowCell>
+											<TableRowCell>@leaderlog.Block</TableRowCell>
+											<TableRowCell>@leaderlog.Chain_length</TableRowCell>
+											<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
+										</TableRow>
 									}
 								</TableBody>
 							</Table>
@@ -79,6 +79,8 @@
 
 	protected override Task OnInitializedAsync()
 	{
+		leadersLogs = new List<StoredLeadersLogsModel>();
+
 		RefreshHistory();
 
 		return Task.FromResult(true);
@@ -108,8 +110,11 @@
 	void RefreshHistory()
 	{
 		var processedLeadersLogs = GetLeadersLogs();
-		leadersLogs = JsonConvert.DeserializeObject<List<StoredLeadersLogsModel>>(processedLeadersLogs.LeadersLogsJson);
-		leadersUpdatedAt = processedLeadersLogs.Timestamp;
+		if (processedLeadersLogs != null)
+		{
+			leadersLogs = JsonConvert.DeserializeObject<List<StoredLeadersLogsModel>>(processedLeadersLogs.LeadersLogsJson);
+			leadersUpdatedAt = processedLeadersLogs.Timestamp;
+		}
 	}
 
 	ProcessedLeadersLogsModel GetLeadersLogs()

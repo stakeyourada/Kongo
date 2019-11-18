@@ -92,7 +92,7 @@ namespace Kongo
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					if(!string.IsNullOrEmpty(_opts.ServerUrls))
+					if(_opts != null && !string.IsNullOrEmpty(_opts.ServerUrls))
 					{
 						webBuilder.UseUrls(_opts.ServerUrls.Split(';', StringSplitOptions.RemoveEmptyEntries));
 					}					

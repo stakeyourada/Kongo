@@ -22,6 +22,9 @@ namespace Kongo.Core.Models
 		[Option("pool-id", Required = false, HelpText = "Stakepool Id to track")]
 		public string PoolId { get; set; }
 
+		[Option("disable-all-collectors", Required = false, HelpText = "Disable all data collection workers")]
+		public bool DisableDataCollection { get; set; }
+
 		[Option("disable-node-stats", Required = false, HelpText = "Disable collection of node statistics every 30 seconds")]
 		public bool NodeStats { get; set; }
 
@@ -45,9 +48,6 @@ namespace Kongo.Core.Models
 
 		[Option("disable-stake-logs", Required = false, HelpText = "Disable collection of Stake Distribution logs every 30 seconds")]
 		public bool StakeDistribution { get; set; }
-
-		[Option("disable-all-collectors", Required = false, HelpText = "Disable all data collection workers")]
-		public bool DisableDataCollection { get; set; }
 
 		[Option("server.urls", Required = false, HelpText = "ASP.NET endpoint urls")]
 		public string ServerUrls { get; set; }
