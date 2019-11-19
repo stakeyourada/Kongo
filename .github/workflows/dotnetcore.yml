@@ -2,7 +2,7 @@ name: ASP.NET Core CI
 
 env:
   source_path: ./src
-  artifact_path: ./src/Kongo/bin/${{ matrix.os }}/artifacts
+  artifact_path: ./src/Kongo/bin/${{matrix.os}}/artifacts
   
 on: [push]
 
