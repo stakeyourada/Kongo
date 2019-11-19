@@ -44,6 +44,7 @@ namespace Kongo.Workers
 					var nodeEntriesEnumerable = _database.NodeStatisticEntries.AsEnumerable();
 					var fragmentEntriesEnumerable = _database.FragmentStatistics.AsEnumerable();
 					var networkEntriesEnumerable = _database.NetworkStatistics.AsEnumerable();
+					var leadersLogsEnumerable = _database.LeadersLogs.AsEnumerable();
 
 					foreach (var entry in nodeEntriesEnumerable.Where(n => n.Timestamp < DateTimeOffset.UtcNow.AddDays(-3)))
 					{
@@ -68,6 +69,13 @@ namespace Kongo.Workers
 						_database.NetworkStatistics.Remove(entry);
 						stoppingToken.ThrowIfCancellationRequested();
 					}
+
+					foreach (var entry in leadersLogsEnumerable.Where(n => n.Timestamp < DateTimeOffset.UtcNow.AddDays(-1)))
+					{
+						_database.LeadersLogs.Remove(entry);
+						stoppingToken.ThrowIfCancellationRequested();
+					}
+					
 
 					await _database.SaveChangesAsync();
 
