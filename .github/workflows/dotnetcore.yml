@@ -7,8 +7,8 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     env:
-          artifact_path: ./artifacts/${{matrix.os}}
-          source_path: ./src
+      artifact_path: ./artifacts/${{matrix.os}}
+      source_path: ./src
     strategy:
       matrix:
         os: [windows-latest, ubuntu-16.04, ubuntu-18.04, macOS-latest]
@@ -36,5 +36,6 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
       with:
-        name: Kongo-${{ matrix.os }}
+        name: Release
         path: ${{ env.artifact_path }}
+      
