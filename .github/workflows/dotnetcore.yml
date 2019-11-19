@@ -35,6 +35,6 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
       with:
-        name: Release
+        name: ${{matrix.os}}
         path: ${{ env.artifact_path }}
       
