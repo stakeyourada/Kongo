@@ -2,6 +2,7 @@ name: ASP.NET Core CI
 
 env:
   source_path: ./src
+  artifact_path: ./src/Kongo/bin/${{ matrix.os }}/artifacts
   
 on: [push]
 
@@ -27,4 +28,9 @@ jobs:
       run: dotnet test --configuration Release
     - name: Run Publish
       working-directory: ${{ env.source_path }}
-      run: dotnet publish --configuration Release
+      run: dotnet publish --configuration Release --output ${{ env.artifact_path }}
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Kongo-${{ matrix.os }}
+        path: ${{ env.artifact_path }}
