@@ -1,18 +1,18 @@
 name: ASP.NET Core CI
 
-env:
-  source_path: ./src  
-  
 on: [push]
 
 jobs:
   build:
 
     runs-on: ${{ matrix.os }}
+    env:
+          artifact_path: ./src/Kongo/bin/${{matrix.os}}/artifacts
+          source_path: ./src
     strategy:
       matrix:
         os: [windows-latest, ubuntu-16.04, ubuntu-18.04, macOS-latest]
-        
+               
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
@@ -27,13 +27,9 @@ jobs:
       run: dotnet test --configuration Release
     - name: Run Publish
       working-directory: ${{ env.source_path }}
-      env:
-          artifact_path: ./src/Kongo/bin/${{matrix.os}}/artifacts
       run: dotnet publish --configuration Release --output ${{ env.artifact_path }}
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
-      env:
-          artifact_path: ./src/Kongo/bin/${{matrix.os}}/artifacts
       with:
         name: Kongo-${{ matrix.os }}
         path: ${{ env.artifact_path }}
