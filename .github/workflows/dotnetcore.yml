@@ -26,7 +26,6 @@ jobs:
       working-directory: ${{ env.source_path }}
       run: dotnet test --configuration Release
     - name: Create Artifacts folder
-      working-directory: ${{ env.source_path }}
       run: |
         mkdir ./artifacts
         mkdir ${{ env.artifact_path }}
