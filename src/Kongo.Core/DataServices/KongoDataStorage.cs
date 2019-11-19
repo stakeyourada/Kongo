@@ -44,6 +44,7 @@ namespace Kongo.Core.DataServices
 		public DbSet<StoredFragmentsModel> FragmentStatistics { get; set; }
 		public DbSet<ProcessedNetworkStatisticsModel> NetworkStatistics { get; set; }
 		public DbSet<ProcessedLeadersLogsModel> LeadersLogs { get; set; }
+		public DbSet<ProcessedStakeModel> StakeDistribution { get; set; }
 
 		public bool InsideLINQPad { get; private set; }
 
@@ -123,6 +124,17 @@ namespace Kongo.Core.DataServices
 				b.ToTable("LeadersLogs");
 			});
 
+			modelBuilder.Entity<ProcessedStakeModel>(b =>
+			{
+				b.HasKey(e => e.Id);
+				b.Property(e => e.Id).ValueGeneratedOnAdd();
+				b.Property(e => e.Timestamp);
+				b.Property(e => e.Epoch);
+				b.Property(e => e.Dangling);
+				b.Property(e => e.PoolDistributionJson);
+				b.Property(e => e.Unassigned);
+				b.ToTable("StakeDistribution");
+			});
 		}
 	}
 }

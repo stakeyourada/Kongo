@@ -4,6 +4,7 @@ using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,20 +37,43 @@ namespace Kongo.Core.DataProcessors
 		{
 			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 
-			//var fragments = JsonConvert.DeserializeObject<List<StakeModel>>(jsonStake);
+			var poolDistibution = new List<PoolDistribution>();
+
+			var stakeModel = JsonConvert.DeserializeObject<StakeModel>(jsonContent);
+
+			var pools = (JArray)stakeModel.Stake.Pools;
+			foreach (var pool in pools)
+			{
+				var distro = new PoolDistribution();
+				foreach (var detail in pool)
+				{
+					var t = detail.Type;
+					if (detail.Type.Equals(JTokenType.String))
+					{
+						distro.PoolId = (string)detail;
+					} else
+					{
+						distro.AdaStaked = (long)detail;
+					}
+				}
+				poolDistibution.Add(distro);
+			}
+
+			//// SQLite can't map IEnum or dynamic objects, so convert pooldistribtion list back to json to store
+			var poolDistributionJson = JsonConvert.SerializeObject(poolDistibution, Formatting.None);
 
 			var result = new ProcessedStakeModel()
 			{
 				Timestamp = DateTimeOffset.UtcNow,
+				Epoch = stakeModel.Epoch,
+				Dangling = stakeModel.Stake.Dangling,
+				Unassigned = stakeModel.Stake.Unassigned,
+				PoolDistributionJson = poolDistributionJson
 			};
 
-			//// SQL Lite can't map IEnum or dynamic objects, so trim to just the aggregate counts
-			//_database.Leaders.Add(new StoredLeadersModel
-			//{
-			//	Timestamp = result.Timestamp				
-			//});
+			_database.StakeDistribution.Add(result);
 			
-			//_database.SaveChanges();
+			_database.SaveChanges();
 
 			// return ProcessedFragmentsModel result
 			return Task.FromResult(result);

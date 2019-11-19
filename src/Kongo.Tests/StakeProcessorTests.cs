@@ -2,7 +2,9 @@
 using Kongo.Core.DataServices;
 using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -50,12 +52,15 @@ namespace Kongo.Tests
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new StakeProcessor(storage, opts);
-			var nodeStats = await _processor.ProcessStake(value);
+			var stakeDistribution = await _processor.ProcessStake(value);
 			storage.Database.EnsureDeleted();
-			Assert.True(true);
-			//Assert.True(nodeStats != null, "nodeStats == null");
-			//Assert.True(nodeStats.BlockRecvCnt > 0, $"BlockRecvCnt = {nodeStats.BlockRecvCnt}");
-			//Assert.True(nodeStats.LastBlockTime != default, $"LastBlockTime = {nodeStats.LastBlockTime}");
+
+			Assert.True(stakeDistribution.Epoch > 0);
+
+			var result = JsonConvert.DeserializeObject<List<PoolDistribution>>(stakeDistribution.PoolDistributionJson);
+			Assert.True(result.Count > 0);
+
+
 		}
 
 
