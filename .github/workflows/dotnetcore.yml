@@ -25,11 +25,12 @@ jobs:
     - name: Run Tests
       working-directory: ${{ env.source_path }}
       run: dotnet test --configuration Release
-    - name: Run Publish
+    - name: Create Artifacts folder
       working-directory: ${{ env.source_path }}
-      run: 
-        mkdir ${{ env.artifact_path }}
-        dotnet publish --configuration Release --output ${{ env.artifact_path }}
+      run: mkdir ${{ env.artifact_path }}
+    - name: Run Publish
+      working-directory: ${{ env.source_path }}      
+      run: dotnet publish --configuration Release --output ${{ env.artifact_path }}
     - name: Upload Artifacts
       uses: actions/upload-artifact@master
       with:
