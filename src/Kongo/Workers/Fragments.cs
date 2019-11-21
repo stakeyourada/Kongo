@@ -49,12 +49,12 @@ namespace Kongo.Workers
 
 					var response = await _httpClient.GetAsync(requestUri.Uri);
 
-					if (_opts.Verbose)
+					if (_opts.Verbose || _opts.FragmentLogs)
 					{
 						var currentForeground = Console.ForegroundColor;
 						Console.ForegroundColor = ConsoleColor.Cyan;
 						Console.WriteLine(requestUri.Uri.ToString());
-						Console.WriteLine(response);
+						//Console.WriteLine(response);
 						Console.WriteLine();
 						Console.ForegroundColor = currentForeground;
 					}
@@ -76,7 +76,7 @@ namespace Kongo.Workers
 					var processedFragments = await _processor.ProcessFragments(content);
 
 					_sb.Clear();
-					_sb.AppendLine($"Fragments running at: {DateTimeOffset.Now}");
+					_sb.AppendLine($"Fragments running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
 					_sb.AppendLine($"Total Fragments: {processedFragments.TotalFragments}");
 					_sb.AppendLine();
@@ -111,6 +111,14 @@ namespace Kongo.Workers
 					if (_opts.ShowFragments)
 					{
 						foreach (var frag in processedFragments.BlockFragments)
+						{
+							_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
+						}
+					}
+					_sb.AppendLine($"\tRejected: {processedFragments.FragmentsRejected}");
+					if (_opts.ShowFragments)
+					{
+						foreach (var frag in processedFragments.RejectedFragments)
 						{
 							_sb.AppendLine($"\t\t\t{frag.Fragment_id}\t @ {frag.Received_at}");
 						}

@@ -50,7 +50,7 @@ namespace Kongo.Workers
 
 					string content = await response.Content.ReadAsStringAsync();
 
-					if (_opts.Verbose)
+					if (_opts.Verbose || _opts.StakePools)
 					{
 						var currentForeground = Console.ForegroundColor;
 						Console.ForegroundColor = ConsoleColor.Cyan;
@@ -64,7 +64,7 @@ namespace Kongo.Workers
 					var processedStakePools = await _processor.ProcessStakePools(content);
 
 					_sb.Clear();
-					_sb.AppendLine($"StakePools running at: {DateTimeOffset.Now}");
+					_sb.AppendLine($"StakePools running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
 					_sb.AppendLine();
 

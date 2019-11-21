@@ -18,6 +18,7 @@ namespace Kongo.Workers
 	{
 		private readonly ILogger<ProcessStdErr> _logger;
 		private readonly IProcessStdError _processor;
+		private readonly KongoOptions _opts;
 		private readonly FileSystemWatcher _watcher;
 		private readonly LogIngestionConfigModel _logIngestionConfig;
 		private readonly Stopwatch _stopwatch;
@@ -25,10 +26,11 @@ namespace Kongo.Workers
 
 		//private readonly NodeConfigurationModel _nodeConfiguration;
 
-		public ProcessStdErr(ILogger<ProcessStdErr> logger, LogIngestionConfigModel logIngestionConfig, IProcessStdError processor)
+		public ProcessStdErr(ILogger<ProcessStdErr> logger, LogIngestionConfigModel logIngestionConfig, IProcessStdError processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_processor = processor;
+			_opts = opts;
 			_watcher = new FileSystemWatcher();
 			_logIngestionConfig = logIngestionConfig;
 			_stopwatch = new Stopwatch();
@@ -71,7 +73,7 @@ namespace Kongo.Workers
 							var processedLogModel = await _processor.ProcessIngestedLogs();
 
 							_sb.Clear();
-							_sb.AppendLine($"Log Summary at: {DateTimeOffset.Now}");
+							_sb.AppendLine($"Log Summary on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 							_sb.AppendLine();
 
 							_logger.LogInformation(_sb.ToString());

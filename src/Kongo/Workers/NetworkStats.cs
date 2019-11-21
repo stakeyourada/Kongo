@@ -52,7 +52,7 @@ namespace Kongo.Workers
 
 						string content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose)
+						if (_opts.Verbose || _opts.NetworkStats)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;
@@ -66,7 +66,7 @@ namespace Kongo.Workers
 						var processedNetworkStatistics = await _processor.ProcessNetworkStatistics(content);
 
 						_sb.Clear();
-						_sb.AppendLine($"NetworkStatistics running at: {DateTimeOffset.Now}");
+						_sb.AppendLine($"NetworkStatistics running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 						_sb.AppendLine();
 						_sb.AppendLine($"Total Established Connections: {processedNetworkStatistics.TotalEstablishedConnections}");
 						_sb.AppendLine();

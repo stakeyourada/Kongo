@@ -56,7 +56,7 @@ namespace Kongo.Workers
 
 						string content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose)
+						if (_opts.Verbose || _opts.NodeStats)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;
@@ -80,7 +80,7 @@ namespace Kongo.Workers
 						_kongoStatus.PoolUptime = TimeSpan.FromSeconds(nodeStatistics.Uptime);
 
 						_sb.Clear();
-						_sb.AppendLine($"NodeStatistics running at: {DateTimeOffset.Now}");
+						_sb.AppendLine($"NodeStatistics running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 						_sb.AppendLine();
 						_sb.AppendLine($"BlockRecvCnt: {nodeStatistics.BlockRecvCnt}");
 						_sb.AppendLine($"LastBlockDate: {nodeStatistics.LastBlockDate}");

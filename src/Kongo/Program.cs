@@ -70,21 +70,17 @@ namespace Kongo
 					if(!_opts.DisableDataCollection)
 					{
 						// configure data collection workers
-						if (!_opts.NodeStats)
-							services.AddHostedService<NodeStats>();
-						if (!_opts.FragmentLogs)
-							services.AddHostedService<Fragments>();
-						if (!_opts.NetworkStats)
-							services.AddHostedService<NetworkStats>();
+						services.AddHostedService<NodeStats>();
+						services.AddHostedService<Fragments>();
+						services.AddHostedService<NetworkStats>();
 						if (!string.IsNullOrEmpty(_opts.PoolId))
 						{
-							if (!_opts.LeaderLogs)
-								services.AddHostedService<Leaders>();
+							
+							services.AddHostedService<Leaders>();
 						}
-						if (!_opts.StakeDistribution)
-							services.AddHostedService<Stake>();
-						if (!_opts.StakePools)
-							services.AddHostedService<StakePools>();
+						services.AddHostedService<Stake>();
+						services.AddHostedService<StakePools>();
+						services.AddHostedService<Settings>();
 					}
 
 					services.AddHostedService<Maintenance>();

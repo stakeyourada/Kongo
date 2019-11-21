@@ -38,7 +38,7 @@ namespace Kongo.Workers
 				try
 				{
 					_sb.Clear();
-					_sb.AppendLine($"Database Maintenance job started running at: {DateTimeOffset.Now}");
+					_sb.AppendLine($"Database Maintenance job started running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
 
 					var nodeEntriesEnumerable = _database.NodeStatisticEntries.AsEnumerable();

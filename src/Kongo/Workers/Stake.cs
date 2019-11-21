@@ -7,6 +7,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Kongo.Workers
 {
@@ -50,7 +53,7 @@ namespace Kongo.Workers
 
 					string content = await response.Content.ReadAsStringAsync();
 
-					if (_opts.Verbose)
+					if (_opts.Verbose || _opts.StakeDistribution)
 					{
 						var currentForeground = Console.ForegroundColor;
 						Console.ForegroundColor = ConsoleColor.Cyan;
@@ -60,19 +63,62 @@ namespace Kongo.Workers
 						Console.WriteLine();
 						Console.ForegroundColor = currentForeground;
 					}
+					_sb.Clear();
+					_sb.AppendLine($"Stake running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
+					_sb.AppendLine();
+					_sb.AppendLine();
 
 					var processedStake = await _processor.ProcessStake(content);
 
-					_sb.Clear();
-					_sb.AppendLine($"Stake running at: {DateTimeOffset.Now}");
-					_sb.AppendLine();
-					_sb.AppendLine();
+					var poolDistribution = JsonConvert.DeserializeObject<List<PoolDistribution>>(processedStake.PoolDistributionJson);
 
+					long totalStaked = 0;
+					long totalPools = 0;
+					foreach (var pool in poolDistribution.OrderByDescending(p => p.AdaStaked))
+					{
+						totalStaked += pool.AdaStaked;
+						totalPools++;
+					}
+
+					_sb.AppendLine($"{"".PadLeft(6, ' ')} {"Total # of Pools:".PadRight(30, ' ')} {totalPools.ToString().PadLeft(20, ' ')}");
+					_sb.AppendLine($"{"".PadLeft(6, ' ')} {"Total Amount Staked:".PadRight(30, ' ')} {Convert.ToDecimal(totalStaked / 1000000).ToString("#,##0.000").PadLeft(20, ' ')}");
+					_sb.AppendLine($"{"".PadLeft(6, ' ')} {"Total (staked + unstaked):".PadRight(30, ' ')} {Convert.ToDecimal((totalStaked + processedStake.Unassigned) / 1000000).ToString("#,##0.000").PadLeft(20, ' ')}");
+					_sb.AppendLine();
+					_sb.AppendLine($"{"".PadLeft(6, ' ')} {"Rank".PadRight(5, ' ')} {"Pool Id".PadRight(64, ' ')} {"Amount Staked".PadLeft(20, ' ')} {"% of Staked".PadLeft(11, ' ')} {"% of Total".PadLeft(11, ' ')} ");
+					_sb.AppendLine($"{"".PadLeft(6, ' ')} {"".PadRight(5, '-')} {"".PadRight(64, '-')} {"".PadLeft(20, '-')} {"".PadLeft(11, '-')} {"".PadLeft(11, '-')} ");
+
+					int top = 0;
+					int rank = 0;
+					foreach (var pool in poolDistribution.OrderByDescending(p => p.AdaStaked) )
+					{
+						rank++;
+						if (top++ < 50)
+						{
+							var percentStaked  = ($"{(Convert.ToDecimal(pool.AdaStaked) / Convert.ToDecimal(totalStaked) * 100).ToString("##0.000")} %");
+							var percentTotal = ($"{(Convert.ToDecimal(pool.AdaStaked) / Convert.ToDecimal(totalStaked + processedStake.Unassigned) * 100).ToString("##0.000")} %");
+
+							if (pool.PoolId.Equals(_opts.PoolId))
+							{
+								_sb.AppendLine($"{"****".PadLeft(6, ' ')} {rank.ToString().PadRight(5, ' ')} {pool.PoolId.PadRight(64, ' ')} {Convert.ToDecimal(pool.AdaStaked / 1000000).ToString("#,##0.000").PadLeft(20, ' ')} {percentStaked.PadLeft(11,' ')} {percentTotal.PadLeft(11, ' ')}");
+							}
+							else
+							{
+								_sb.AppendLine($"{"".PadLeft(6, ' ')} {rank.ToString().PadRight(5, ' ')} {pool.PoolId.PadRight(64, ' ')} {Convert.ToDecimal(pool.AdaStaked / 1000000).ToString("#,##0.000").PadLeft(20, ' ')} {percentStaked.PadLeft(11, ' ')} {percentTotal.PadLeft(11, ' ')}");
+							}
+						}
+					}
+					if (totalPools > 50)
+					{
+						_sb.AppendLine();
+						_sb.AppendLine($"...{totalPools - 50} more not shown");
+					}
+					_sb.AppendLine();
 					_logger.LogInformation(_sb.ToString());
 				}
 				catch (Exception ex)
-				{
-					_logger.LogError(ex.Message);
+				{					
+					_logger.LogError(ex.InnerException, ex.InnerException.Message);
+					
 				}
 
 				await Task.Delay(30000, stoppingToken);
