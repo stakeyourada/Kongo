@@ -3,13 +3,15 @@
 @using Kongo.Core.DataServices
 @using Kongo.Core.Models
 @using System.Globalization
+@using Newtonsoft.Json;
 
+@inject KongoStatusModel _kongoStatus
 @inject KongoDataStorage _kongoDatabase
 
 <Row>
 	<Column>
 		<Row>
-			<Column ColumnSize="ColumnSize.Is8">
+			<Column ColumnSize="ColumnSize.Is6">
 				<Card Margin="Margin.Is1.FromBottom">
 					<CardHeader>
 						<Row>
@@ -72,7 +74,7 @@
 				</Card>
 
 			</Column>
-			<Column ColumnSize="ColumnSize.Is4">
+			<Column ColumnSize="ColumnSize.Is6">
 				<Card Margin="Margin.Is1.FromBottom">
 					<CardHeader>
 						<Row>
@@ -137,6 +139,11 @@
 									<TableRowCell></TableRowCell>
 									<TableRowCell>InABlock</TableRowCell>
 									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsInBlock</TableRowCell>
+								</TableRow>
+								<TableRow>
+									<TableRowCell></TableRowCell>
+									<TableRowCell>Rejected</TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsRejected</TableRowCell>
 								</TableRow>
 							</TableBody>
 						</Table>
@@ -226,17 +233,33 @@
 					<CardHeader>
 						<Row>
 							<strong>
-								Leader Events:
+								Leader Events Summary:
 							</strong>
 						</Row>
 						<Row>
 							<small>
-								Last run at: 11/9/2019 8:47:08 PM +00:00
+								Last run at: @leadersUpdatedAt
 							</small>
 						</Row>
 					</CardHeader>
 					<CardBody>
-						This page left blank intentionally - for now :)
+						<Table IsNarrow="true" IsHoverable="true">
+							<TableHeader>
+								<TableRow>
+									<TableHeaderCell>Scheduled date</TableHeaderCell>
+									<TableHeaderCell>Status</TableHeaderCell>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								@foreach (var leaderlog in _homePageModel?.ProcessedLeadersLogs)
+								{
+									<TableRow>
+										<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+										<TableRowCell>@leaderlog.Status</TableRowCell>
+									</TableRow>
+								}
+							</TableBody>
+						</Table>
 					</CardBody>
 				</Card>
 			</Column>
@@ -248,6 +271,7 @@
 @code {
 
 	HomePageViewModel _homePageModel = new HomePageViewModel();
+	DateTimeOffset leadersUpdatedAt = default;
 
 	protected override Task OnInitializedAsync()
 	{
@@ -269,8 +293,6 @@
 	Task HandleRedraw()
 	{
 		RefreshHistory();
-
-
 
 		return Task.FromResult(true);
 	}
@@ -306,11 +328,34 @@
 		return null;
 	}
 
+	ProcessedLeadersLogsModel GetLeaderEventsSummary()
+	{
+		var records = _kongoDatabase.LeadersLogs.AsEnumerable();
+		if (records.Skip(1).Any())
+		{
+			return records.OrderBy(r => r.Id).Last();
+		}
+		return null;
+	}
+
 	void RefreshHistory()
 	{
 		_homePageModel.ProcessedFragments = GetLastFragmentsSummary();
 		_homePageModel.ProcessedNetworkStatistics = GetLastNetworkSummary();
 		_homePageModel.NodeStatistics = GetLastNodeStatsSummary();
+
+		var processedLeadersLogs = GetLeaderEventsSummary();
+		if (processedLeadersLogs != null)
+		{
+			_homePageModel.ProcessedLeadersLogs = JsonConvert.DeserializeObject<List<StoredLeadersLogsModel>>(processedLeadersLogs.LeadersLogsJson);
+			leadersUpdatedAt = processedLeadersLogs.Timestamp;
+		}
+
+		_kongoStatus.PoolState = _homePageModel.NodeStatistics?.State;
+		if(long.TryParse(_homePageModel.NodeStatistics?.LastBlockHeight, out long currBlockHeight))
+		{
+			_kongoStatus.CurrentBlockHeight = currBlockHeight;
+		}
 	}
 
 }

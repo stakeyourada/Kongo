@@ -6,9 +6,14 @@ namespace Kongo.Core.Models
 {
 	public class HomePageViewModel
 	{
+		public HomePageViewModel()
+		{
+			ProcessedLeadersLogs = new List<StoredLeadersLogsModel>();
+		}
+
 		public KongoStatusModel KongoStatus { get; set; }
 		public StoredFragmentsModel ProcessedFragments { get; set; }
-		public ProcessedLeadersLogsModel ProcessedLeadersLogs { get; set; }
+		public List<StoredLeadersLogsModel> ProcessedLeadersLogs { get; set; }
 		public ProcessedLeadersModel ProcessedLeaders { get; set; }
 		public ProcessedLogModel ProcessedLog { get; set; }
 		public ProcessedNetworkStatisticsModel ProcessedNetworkStatistics { get; set; }
