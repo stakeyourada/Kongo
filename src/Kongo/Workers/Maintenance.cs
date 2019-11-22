@@ -5,9 +5,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Kongo.Core.DataServices;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using Kongo.Core.Interfaces;
 
 namespace Kongo.Workers
 {
@@ -19,16 +17,14 @@ namespace Kongo.Workers
 		private readonly ILogger<Maintenance> _logger;
 		private readonly StringBuilder _sb;
 		private readonly KongoOptions _opts;
-		private readonly KongoDataStorage _database;
+		private readonly IRunDatabaseMaintenance _databaseMaintenance;
 
-		public Maintenance(ILogger<Maintenance> logger, KongoOptions opts, KongoDataStorage database)
+		public Maintenance(ILogger<Maintenance> logger, KongoOptions opts, IRunDatabaseMaintenance databaseMaintenance)
 		{
 			_logger = logger;
 			_sb = new StringBuilder();
 			_opts = opts;
-			_database = database;
-			_database.Database.EnsureCreated();
-			_database.Database.Migrate();
+			_databaseMaintenance = databaseMaintenance;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,35 +37,7 @@ namespace Kongo.Workers
 					_sb.AppendLine($"Database Maintenance job started running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
 
-					var nodeEntriesEnumerable = _database.NodeStatisticEntries.AsEnumerable();
-					var fragmentEntriesEnumerable = _database.FragmentStatistics.AsEnumerable();
-					var networkEntriesEnumerable = _database.NetworkStatistics.AsEnumerable();
-
-					foreach (var entry in nodeEntriesEnumerable.Where(n => n.Timestamp < DateTimeOffset.UtcNow.AddDays(-3)))
-					{
-						_database.NodeStatisticEntries.Remove(entry);
-						stoppingToken.ThrowIfCancellationRequested();
-					}
-
-					foreach (var entry in nodeEntriesEnumerable.Where(n => string.IsNullOrEmpty(n.LastBlockDate) ))
-					{
-						_database.NodeStatisticEntries.Remove(entry);
-						stoppingToken.ThrowIfCancellationRequested();
-					}
-
-					foreach (var entry in fragmentEntriesEnumerable.Where(n => n.Timestamp < DateTimeOffset.UtcNow.AddDays(-3)))
-					{
-						_database.FragmentStatistics.Remove(entry);
-						stoppingToken.ThrowIfCancellationRequested();
-					}
-
-					foreach (var entry in networkEntriesEnumerable.Where(n => n.Timestamp < DateTimeOffset.UtcNow.AddDays(-3)))
-					{
-						_database.NetworkStatistics.Remove(entry);
-						stoppingToken.ThrowIfCancellationRequested();
-					}
-
-					await _database.SaveChangesAsync();
+					await _databaseMaintenance.RunDatabaseMaintenance(stoppingToken);
 
 					_sb.AppendLine($"Database Maintenance job completed at: {DateTimeOffset.Now}");
 					_sb.AppendLine();

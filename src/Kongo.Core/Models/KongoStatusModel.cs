@@ -13,5 +13,10 @@ namespace Kongo.Core.Models
 		public TimeSpan PoolUptime { get; set; }
 
 		public TimeRangeEnum CurrentChartTimeframe { get; set; }
+
+		public KongoStatusModel ShallowCopy()
+		{
+			return (KongoStatusModel)this.MemberwiseClone();
+		}
 	}
 }

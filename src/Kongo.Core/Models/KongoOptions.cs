@@ -57,6 +57,11 @@ namespace Kongo.Core.Models
 		
 		public DateTimeOffset ApplicationStartedOn { get; set; }
 
+		public KongoOptions ShallowCopy()
+		{
+			return (KongoOptions)this.MemberwiseClone();
+		}
+
 		[Usage(ApplicationAlias = "Kongo")]
 		public static IEnumerable<Example> Examples =>
 			new List<Example>() {
