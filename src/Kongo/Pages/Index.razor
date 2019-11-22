@@ -93,8 +93,8 @@
 							<TableBody>
 								<TableRow>
 									<TableRowCell><strong>Total Fragments:</strong></TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.TotalFragments</TableRowCell>
 									<TableRowCell></TableRowCell>
+									<TableRowCell>@_homePageModel.ProcessedFragments?.TotalFragments</TableRowCell>
 								</TableRow>
 							</TableBody>
 						</Table>
@@ -246,17 +246,19 @@
 						<Table IsNarrow="true" IsHoverable="true">
 							<TableHeader>
 								<TableRow>
-									<TableHeaderCell>Scheduled date</TableHeaderCell>
+									<TableHeaderCell>Scheduled Slot</TableHeaderCell>
+									<TableHeaderCell>Scheduled Time</TableHeaderCell>
 									<TableHeaderCell>Status</TableHeaderCell>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								@foreach (var leaderlog in _homePageModel?.ProcessedLeadersLogs)
 								{
-									<TableRow>
-										<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
-										<TableRowCell>@leaderlog.Status</TableRowCell>
-									</TableRow>
+								<TableRow>
+									<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+									<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
+									<TableRowCell>@leaderlog.Status</TableRowCell>
+								</TableRow>
 								}
 							</TableBody>
 						</Table>

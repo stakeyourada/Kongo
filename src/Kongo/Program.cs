@@ -59,6 +59,7 @@ namespace Kongo
 					services.AddTransient<IProcessLeaders, LeadersProcessor>();
 					services.AddTransient<IProcessStakePools, StakePoolsProcessor>();
 					services.AddTransient<IProcessStake, StakeProcessor>();
+					services.AddTransient<IProcessSettings, SettingsProcessor>();
 					services.AddTransient<IRunDatabaseMaintenance, DatabaseMaintenance>();
 
 					// Inject shared model and DbContext

@@ -61,7 +61,7 @@ namespace Kongo.Workers
 						Console.ForegroundColor = currentForeground;
 					}
 
-					var processedStake = await _processor.ProcessSettings(content);
+					var processedSettings = await _processor.ProcessSettings(content);
 
 					_sb.Clear();
 					_sb.AppendLine($"Settings running on {_opts.PoolName}, at: {DateTimeOffset.Now}");

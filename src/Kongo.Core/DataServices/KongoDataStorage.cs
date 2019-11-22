@@ -60,6 +60,7 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.Msg).IsRequired().HasMaxLength(255);
 				b.Property(e => e.Level).IsRequired().HasMaxLength(10);
 				b.Property(e => e.Ts).IsRequired();
+				b.HasIndex(b => b.Ts);
 				b.Property(e => e.Node_id).HasMaxLength(64);
 				b.Property(e => e.Peer_addr).IsRequired().HasMaxLength(25);
 				b.Property(e => e.Task).IsRequired().HasMaxLength(30);
@@ -72,6 +73,7 @@ namespace Kongo.Core.DataServices
 				b.HasKey(e => e.Id);
 				b.Property(e => e.Id).ValueGeneratedOnAdd();
 				b.Property(e => e.Timestamp).IsRequired(true);
+				b.HasIndex(b => b.Timestamp);
 				b.Property(e => e.BlockRecvCnt);
 				b.Property(e => e.LastBlockDate).IsRequired(true).HasMaxLength(20);
 				b.Property(e => e.LastBlockFees);
@@ -91,6 +93,7 @@ namespace Kongo.Core.DataServices
 				b.HasKey(e => e.Id);
 				b.Property(e => e.Id).ValueGeneratedOnAdd();
 				b.Property(e => e.Timestamp);
+				b.HasIndex(b => b.Timestamp);
 				b.Property(e => e.FragmentsReceviedFromRest);
 				b.Property(e => e.FragmentsReceviedFromNetwork);
 				b.Property(e => e.FragmentsInBlock);
@@ -105,6 +108,7 @@ namespace Kongo.Core.DataServices
 				b.HasKey(e => e.Id);
 				b.Property(e => e.Id).ValueGeneratedOnAdd();
 				b.Property(e => e.Timestamp);
+				b.HasIndex(b => b.Timestamp);
 				b.Property(e => e.TotalEstablishedConnections);
 				b.Property(e => e.BlocksReceivedInPast30Min);
 				b.Property(e => e.FragmentsReceivedInPast30Min);
@@ -120,6 +124,7 @@ namespace Kongo.Core.DataServices
 				b.HasKey(e => e.Id);
 				b.Property(e => e.Id).ValueGeneratedOnAdd();
 				b.Property(e => e.Timestamp);
+				b.HasIndex(b => b.Timestamp);
 				b.Property(e => e.LeadersLogsJson);
 				b.ToTable("LeadersLogs");
 			});
@@ -129,6 +134,7 @@ namespace Kongo.Core.DataServices
 				b.HasKey(e => e.Id);
 				b.Property(e => e.Id).ValueGeneratedOnAdd();
 				b.Property(e => e.Timestamp);
+				b.HasIndex(b => b.Timestamp);
 				b.Property(e => e.Epoch);
 				b.Property(e => e.Dangling);
 				b.Property(e => e.PoolDistributionJson);
