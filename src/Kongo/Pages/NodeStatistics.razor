@@ -63,7 +63,7 @@
 
 	protected override Task OnInitializedAsync()
 	{
-		_nodeStatisticsData.Database.EnsureCreated();
+		//_nodeStatisticsData.Database.EnsureCreated();
 
 		// set this value so the UI renders the active button correctly on first render
 		dataWindowFlag = _statusModel.CurrentChartTimeframe;
