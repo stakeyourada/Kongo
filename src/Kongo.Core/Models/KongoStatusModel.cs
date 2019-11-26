@@ -8,6 +8,8 @@ namespace Kongo.Core.Models
 
 		public DateTimeOffset LastBlockReceivedAt { get; set; }
 
+		public string CurrentBlockDate { get; set; }
+
 		public long CurrentBlockHeight { get; set; }
 
 		public TimeSpan PoolUptime { get; set; }
