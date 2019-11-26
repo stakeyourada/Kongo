@@ -11,6 +11,13 @@
 <Row>
 	<Column>
 		<Row>
+			<Column ColumnSize="ColumnSize.Is1">
+				<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
+			</Column>
+			<Column ColumnSize="ColumnSize.Is11">
+			</Column>
+		</Row>
+		<Row>
 			<Column ColumnSize="ColumnSize.Is6">
 				<Card Margin="Margin.Is1.FromBottom">
 					<CardHeader>
@@ -252,7 +259,7 @@
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								@foreach (var leaderlog in _homePageModel?.ProcessedLeadersLogs)
+								@foreach (var leaderlog in _homePageModel?.ProcessedLeadersLogs.OrderBy(p => p.Scheduled_at_time).Select(log => log.ConvertToDisplayedLeadersLogsModel()))
 								{
 								<TableRow>
 									<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
