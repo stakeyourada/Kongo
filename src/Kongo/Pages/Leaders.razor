@@ -44,20 +44,20 @@
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									@foreach (var leaderlog in leadersLogs)
+									@foreach (var leaderlog in leadersLogs.OrderBy(p => p.Scheduled_at_time).Select(log => log.ConvertToDisplayedLeadersLogsModel()))
 									{
-										<TableRow>
+									<TableRow>
 
-											<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
-											<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
-											<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
-											<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
-											<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
-											<TableRowCell>@leaderlog.Status</TableRowCell>
-											<TableRowCell>@leaderlog.Block</TableRowCell>
-											<TableRowCell>@leaderlog.Chain_length</TableRowCell>
-											<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
-										</TableRow>
+										<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
+										<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+										<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Status</TableRowCell>
+										<TableRowCell>@leaderlog.Block</TableRowCell>
+										<TableRowCell>@leaderlog.Chain_length</TableRowCell>
+										<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
+									</TableRow>
 									}
 								</TableBody>
 							</Table>
