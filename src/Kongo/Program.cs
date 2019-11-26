@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
@@ -36,13 +37,35 @@ namespace Kongo
 						(KongoOptions opts) => LoadKongoOptions(opts),
 						HandleParseError);
 
-				CreateHostBuilder(args).Build().Run();
+				var host = CreateHostBuilder(args).Build();
+
+				CreateDbIfNotExists(host);
+
+				host.Run();
 			}
 			catch (ArgumentNullException)
 			{
 				// just ignore this exception and let app close, cmd line help was already displayed
 			}
+		}
 
+		private static void CreateDbIfNotExists(IHost host)
+		{
+			using (var scope = host.Services.CreateScope())
+			{
+				var services = scope.ServiceProvider;
+
+				try
+				{
+					var context = services.GetRequiredService<KongoDataStorage>();
+					context.Database.Migrate();
+				}
+				catch (Exception ex)
+				{
+					var logger = services.GetRequiredService<ILogger<Program>>();
+					logger.LogError(ex, "An error occurred creating the DB.");
+				}
+			}
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -75,7 +98,7 @@ namespace Kongo
 						services.AddHostedService<NetworkStats>();
 						if (!string.IsNullOrEmpty(_opts.PoolId))
 						{
-							
+
 							services.AddHostedService<Leaders>();
 						}
 						services.AddHostedService<Stake>();
@@ -84,7 +107,6 @@ namespace Kongo
 					}
 
 					services.AddHostedService<Maintenance>();
-
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
@@ -132,7 +154,7 @@ namespace Kongo
 				Console.WriteLine($"Excaption: {ex}, {ex.Message}");
 				Console.ForegroundColor = currentForeground;
 
-				_dbConnectionString = "Data Source=Kongo.SQlite;";				
+				_dbConnectionString = "Data Source=Kongo.SQlite;";
 			}
 
 			// initialize Kongo Status model

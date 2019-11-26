@@ -26,9 +26,16 @@ namespace Kongo.Core.DataServices
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
+			base.OnConfiguring(optionsBuilder);
+			var builder = new ConfigurationBuilder()
+				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+			IConfigurationRoot config = builder.Build();
+
 			// Assign _connectionString to the optionsBuilder:
 			if (_connectionString != null)
-				optionsBuilder.UseSqlite(_connectionString);    // Change to UseSqlite if you're using SQLite
+				optionsBuilder.UseSqlite(_connectionString);  
+			else
+				optionsBuilder.UseSqlite(config.GetConnectionString("KongoDb"));
 
 			// Recommended: uncomment the following line to enable lazy-loading navigation hyperlinks in LINQPad:
 			if (InsideLINQPad) optionsBuilder.UseLazyLoadingProxies();

@@ -22,8 +22,6 @@ namespace Kongo.Core.DataProcessors
 		public FragmentProcessor(KongoDataStorage database)
 		{
 			_database = database;
-			_database.Database.EnsureCreated();
-			_database.Database.Migrate();
 		}
 
 		/// <summary>

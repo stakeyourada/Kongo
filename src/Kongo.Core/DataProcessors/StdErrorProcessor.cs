@@ -21,8 +21,6 @@ namespace Kongo.Core.DataProcessors
 		public StdErrorProcessor(KongoDataStorage databaseName)
 		{
 			_db = databaseName;
-			_db.Database.EnsureCreated();
-			_db.Database.Migrate();			
 		}
 
 		~StdErrorProcessor()
