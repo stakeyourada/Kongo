@@ -22,7 +22,6 @@ namespace Kongo.Core.DataProcessors
 		public SettingsProcessor(KongoDataStorage database, KongoOptions opts)
 		{
 			_database = database;
-			_database.Database.Migrate();
 			_opts = opts;
 		}
 
