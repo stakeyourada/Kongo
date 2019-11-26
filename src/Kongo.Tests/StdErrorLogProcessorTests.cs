@@ -53,24 +53,11 @@ namespace Kongo.Tests
 		public async Task ProcessValidStdErrStream(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new StdErrorProcessor(storage);
 			await _processor.IngestLogEntry(value, 1);
 			var logs = await _processor.ProcessIngestedLogs();
-
-			Assert.True(await _processor.DeleteDatabaseFile());
-			//Assert.True(fragments != null, "fragements == null");
-			//Assert.True(fragments.FragmentsReceviedFromNetwork > 0, $"FragmentsReceviedFromNetwork = {fragments.FragmentsReceviedFromNetwork}");
-			//Assert.True(fragments.FragmentsReceviedFromRest == 0, $"FragmentsReceviedFromRest = {fragments.FragmentsReceviedFromRest}");
-			//if (value.Contains("08c7adcab95ccba8ab7a4828061363e7cb770ae24d1795f2895e37d1e6f5f1fa"))
-			//{
-			//	Assert.True(fragments.FragmentsInBlock > 0, $"FragmentsInBlock = {fragments.FragmentsInBlock}");
-			//	Assert.True(fragments.FragmentsPending > 0, $"PendingFragments = {fragments.FragmentsPending}");
-			//}
-			//else
-			//{
-			//	Assert.True(fragments.FragmentsInBlock == 0, $"FragmentsInBlock = {fragments.FragmentsInBlock}");
-			//	Assert.True(fragments.FragmentsPending > 0, $"PendingFragments = {fragments.FragmentsPending}");
-			//}
+			storage.Database.EnsureDeleted();
 		}
 
 		[Theory]
@@ -80,9 +67,10 @@ namespace Kongo.Tests
 		public void InvalidStdErrStream_Throws_ArgumentException(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new StdErrorProcessor(storage);
-			Assert.ThrowsAsync<ArgumentException>(() => _processor.IngestLogEntry(value, 1));
-			var result = _processor.DeleteDatabaseFile();
+			storage.Database.EnsureDeleted();
+			Assert.ThrowsAsync<ArgumentException>(() => _processor.IngestLogEntry(value, 1));			
 		}
 	}
 

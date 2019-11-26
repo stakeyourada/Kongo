@@ -21,6 +21,7 @@ namespace Kongo.Tests
 		{
 
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new StakePoolsProcessor(storage, opts);
 			var stakePools = await _processor.ProcessStakePools(value);

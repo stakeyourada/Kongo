@@ -20,6 +20,7 @@ namespace Kongo.Tests
 		public async Task ProcessSettings(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new SettingsProcessor(storage, opts);
 			var nodeStats = await _processor.ProcessSettings(value);

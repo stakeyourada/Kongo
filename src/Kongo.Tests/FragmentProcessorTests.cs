@@ -34,10 +34,12 @@ const string _fragmentStream3 = "[{\"fragment_id\":\"db22d4501fe76e54a576fd24e5f
 		public async Task ProcessValidFragmentStream(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new FragmentProcessor(storage);
 			var fragments = await _processor.ProcessFragments(value);
 			Assert.True(fragments != null, "fragements == null");
 			Assert.True(fragments.TotalFragments == fragments.FragmentsInBlock + fragments.FragmentsRejected + fragments.FragmentsPending , $"Total Fragments = {fragments.TotalFragments}, All types added = {fragments.FragmentsInBlock + fragments.FragmentsRejected + fragments.FragmentsPending}");
+			storage.Database.EnsureDeleted();
 		}
 
 		[Theory]
@@ -45,6 +47,7 @@ const string _fragmentStream3 = "[{\"fragment_id\":\"db22d4501fe76e54a576fd24e5f
 		public async Task ParseAllValidStatusTypesFromFragmentStream(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new FragmentProcessor(storage);
 			var fragments = await _processor.ProcessFragments(value);
 			Assert.True(fragments != null, "fragements == null");
@@ -53,6 +56,7 @@ const string _fragmentStream3 = "[{\"fragment_id\":\"db22d4501fe76e54a576fd24e5f
 			Assert.True(fragments.FragmentsInBlock > 0, $"FragmentsInBlock = {fragments.FragmentsInBlock}");
 			Assert.True(fragments.FragmentsRejected > 0, $"FragmentsRejected = {fragments.FragmentsRejected}");
 			Assert.True(fragments.FragmentsPending > 0, $"PendingFragments = {fragments.FragmentsPending}");
+			storage.Database.EnsureDeleted();
 		}
 
 		[Theory]
@@ -62,8 +66,10 @@ const string _fragmentStream3 = "[{\"fragment_id\":\"db22d4501fe76e54a576fd24e5f
 		public void InvalidFragmentStream_Throws_ArgumentException(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new FragmentProcessor(storage);
 			Assert.ThrowsAsync<ArgumentException>(() => _processor.ProcessFragments(value));
+			storage.Database.EnsureDeleted();
 		}
 
 	}
