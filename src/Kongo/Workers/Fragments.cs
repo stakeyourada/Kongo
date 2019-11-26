@@ -59,9 +59,6 @@ namespace Kongo.Workers
 						Console.ForegroundColor = currentForeground;
 					}
 
-					//will throw an exception if not successful
-					response.EnsureSuccessStatusCode();
-
 					string content = await response.Content.ReadAsStringAsync();
 
 					if (_opts.Verbose)
@@ -72,6 +69,9 @@ namespace Kongo.Workers
 						Console.WriteLine();
 						Console.ForegroundColor = currentForeground;
 					}
+
+					//will throw an exception if not successful
+					response.EnsureSuccessStatusCode();
 
 					var processedFragments = await _processor.ProcessFragments(content);
 

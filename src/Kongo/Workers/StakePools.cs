@@ -45,9 +45,6 @@ namespace Kongo.Workers
 				{
 					var response = await _httpClient.GetAsync(requestUri.Uri);
 
-					//will throw an exception if not successful
-					response.EnsureSuccessStatusCode();
-
 					string content = await response.Content.ReadAsStringAsync();
 
 					if (_opts.Verbose || _opts.StakePools)
@@ -60,6 +57,9 @@ namespace Kongo.Workers
 						Console.WriteLine();
 						Console.ForegroundColor = currentForeground;
 					}
+
+					//will throw an exception if not successful
+					response.EnsureSuccessStatusCode();
 
 					var processedStakePools = await _processor.ProcessStakePools(content);
 

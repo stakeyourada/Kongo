@@ -51,9 +51,6 @@ namespace Kongo.Workers
 					{
 						var response = await client.GetAsync(requestUri.Uri);
 
-						//will throw an exception if not successful
-						response.EnsureSuccessStatusCode();
-
 						string content = await response.Content.ReadAsStringAsync();
 
 						if (_opts.Verbose || _opts.NodeStats)
@@ -67,10 +64,14 @@ namespace Kongo.Workers
 							Console.ForegroundColor = currentForeground;
 						}
 
+						//will throw an exception if not successful
+						response.EnsureSuccessStatusCode();
+
 						var nodeStatistics = await _processor.ProcessNodeStatistics(content);
 
 						_kongoStatus.PoolState = nodeStatistics.State;
-						
+						_kongoStatus.CurrentBlockDate = nodeStatistics.LastBlockDate;
+
 						if (long.TryParse(nodeStatistics.LastBlockHeight, out long blockHeight))
 							_kongoStatus.CurrentBlockHeight = blockHeight;
 						else
