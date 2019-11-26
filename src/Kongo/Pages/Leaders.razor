@@ -96,14 +96,8 @@
 
 	Task HandleRedraw()
 	{
-		//totalFragmentsChart.Clear();
-
 		RefreshHistory();
 
-		//totalFragmentsChart.AddLabel(fragmentStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
-		//totalFragmentsChart.AddDataSet(GetTotalFragments());
-
-		//await totalFragmentsChart.Update();
 		return Task.FromResult(true);
 	}
 
@@ -123,8 +117,10 @@
 		if (records.Skip(1).Any())
 		{
 			return records.OrderBy(r => r.Id).Last();
+		} else
+		{
+			return records.FirstOrDefault();
 		}
-		return null;
 	}
 
 }

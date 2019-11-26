@@ -89,11 +89,6 @@
 	{
 		if (firstRender)
 		{
-			//// set this value so the UI renders the active button correctly on first render
-			//dataWindowFlag = _statusModel.CurrentChartTimeframe;
-			//dataWindow = (int)_statusModel.CurrentChartTimeframe;
-			//groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(_statusModel.CurrentChartTimeframe);
-
 			await HandleRedraw();
 		}
 	}
