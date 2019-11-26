@@ -52,6 +52,7 @@ namespace Kongo.Tests
 		public async Task ProcessStakeDistribution(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new StakeProcessor(storage, opts);
 			var stakeDistribution = await _processor.ProcessStake(value);

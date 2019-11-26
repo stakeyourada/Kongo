@@ -26,8 +26,10 @@ namespace Kongo.Tests
 		public async Task ProcessValidNetworkStatisticsStream(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new NetworkStatisticsProcessor(storage);
 			var networkStats = await _processor.ProcessNetworkStatistics(value);
+			storage.Database.EnsureDeleted();
 			Assert.True(networkStats != null, "networkStats == null");
 			Assert.True(networkStats.LastBlockReceivedAt != default(DateTimeOffset), $"LastBlockReceivedAt = {networkStats.LastFragmentReceivedAt}");
 			Assert.True(networkStats.LastFragmentReceivedAt != default(DateTimeOffset), $"LastFragmentReceivedAt = {networkStats.LastFragmentReceivedAt}");
@@ -41,8 +43,10 @@ namespace Kongo.Tests
 		public async Task ProcessValidNetworkStatisticsStreamAllNulls(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new NetworkStatisticsProcessor(storage);
 			var networkStats = await _processor.ProcessNetworkStatistics(value);
+			storage.Database.EnsureDeleted();
 			Assert.True(networkStats != null, "networkStats == null");
 			Assert.True(networkStats.LastBlockReceivedAt == default(DateTimeOffset), $"LastBlockReceivedAt = {networkStats.LastFragmentReceivedAt}");
 			Assert.True(networkStats.LastFragmentReceivedAt == default(DateTimeOffset), $"LastFragmentReceivedAt = {networkStats.LastFragmentReceivedAt}");
@@ -58,7 +62,9 @@ namespace Kongo.Tests
 		public void InvalidNetworkStatistics_Throws_ArgumentException(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			_processor = new NetworkStatisticsProcessor(storage);
+			storage.Database.EnsureDeleted();
 			Assert.ThrowsAsync<ArgumentException>(() => _processor.ProcessNetworkStatistics(value));
 		}
 	}

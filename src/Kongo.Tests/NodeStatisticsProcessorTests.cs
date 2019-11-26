@@ -24,9 +24,11 @@ namespace Kongo.Tests
 		public async Task ProcessNodeStatisticStreamWithNullLastBlockTime(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new NodeStatisticsProcessor(storage, opts);
 			var nodeStats = await _processor.ProcessNodeStatistics(value);
+			storage.Database.EnsureDeleted();
 			Assert.True(nodeStats != null, "nodeStats == null");
 			Assert.True(nodeStats.BlockRecvCnt > 0, $"BlockRecvCnt = {nodeStats.BlockRecvCnt}");
 			Assert.True(nodeStats.LastBlockTime != default, $"LastBlockTime = {nodeStats.LastBlockTime}");
@@ -37,9 +39,11 @@ namespace Kongo.Tests
 		public async Task ProcessValidNodeStatisticStream(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new NodeStatisticsProcessor(storage, opts);
 			var nodeStats = await _processor.ProcessNodeStatistics(value);
+			storage.Database.EnsureDeleted();
 			Assert.True(nodeStats != null, "nodeStats == null");
 			Assert.True(nodeStats.BlockRecvCnt > 0, $"BlockRecvCnt = {nodeStats.BlockRecvCnt}");
 			Assert.True(nodeStats.LastBlockTime != default, $"LastBlockTime = {nodeStats.LastBlockTime}"); 
@@ -52,6 +56,7 @@ namespace Kongo.Tests
 		public void InvalidNodeStatisticStream_Throws_ArgumentException(string value)
 		{
 			var storage = new KongoDataStorage($"Data Source={Path.GetRandomFileName()}");
+			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new NodeStatisticsProcessor(storage, opts);
 			storage.Database.EnsureDeleted();
