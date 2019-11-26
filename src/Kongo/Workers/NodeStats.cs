@@ -51,12 +51,9 @@ namespace Kongo.Workers
 					{
 						var response = await client.GetAsync(requestUri.Uri);
 
-						//will throw an exception if not successful
-						response.EnsureSuccessStatusCode();
-
 						string content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose)
+						if (_opts.Verbose || _opts.NodeStats)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;
@@ -67,10 +64,14 @@ namespace Kongo.Workers
 							Console.ForegroundColor = currentForeground;
 						}
 
+						//will throw an exception if not successful
+						response.EnsureSuccessStatusCode();
+
 						var nodeStatistics = await _processor.ProcessNodeStatistics(content);
 
 						_kongoStatus.PoolState = nodeStatistics.State;
-						
+						_kongoStatus.CurrentBlockDate = nodeStatistics.LastBlockDate;
+
 						if (long.TryParse(nodeStatistics.LastBlockHeight, out long blockHeight))
 							_kongoStatus.CurrentBlockHeight = blockHeight;
 						else
@@ -80,7 +81,7 @@ namespace Kongo.Workers
 						_kongoStatus.PoolUptime = TimeSpan.FromSeconds(nodeStatistics.Uptime);
 
 						_sb.Clear();
-						_sb.AppendLine($"NodeStatistics running at: {DateTimeOffset.Now}");
+						_sb.AppendLine($"NodeStatistics running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 						_sb.AppendLine();
 						_sb.AppendLine($"BlockRecvCnt: {nodeStatistics.BlockRecvCnt}");
 						_sb.AppendLine($"LastBlockDate: {nodeStatistics.LastBlockDate}");

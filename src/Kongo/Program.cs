@@ -8,6 +8,7 @@ using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
 using Kongo.Workers;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -49,42 +50,37 @@ namespace Kongo
 				.ConfigureServices((hostContext, services) =>
 				{
 					// Configuration
-					//services.AddSingleton<NodeConfigurationModel>(_NodeConfig);
 					services.AddSingleton<KongoOptions>(_opts);
 
 					// Inject data processors
-					services.AddSingleton<IProcessFragments, FragmentProcessor>();
-					services.AddSingleton<IProcessNetworkStatistics, NetworkStatisticsProcessor>();
-					services.AddSingleton<IProcessNodeStatistics, NodeStatisticsProcessor>();
-					services.AddSingleton<IProcessLeaders, LeadersProcessor>();
-					services.AddSingleton<IProcessStakePools, StakePoolsProcessor>();
-					services.AddSingleton<IProcessStake, StakeProcessor>();
+					services.AddTransient<IProcessFragments, FragmentProcessor>();
+					services.AddTransient<IProcessNetworkStatistics, NetworkStatisticsProcessor>();
+					services.AddTransient<IProcessNodeStatistics, NodeStatisticsProcessor>();
+					services.AddTransient<IProcessLeaders, LeadersProcessor>();
+					services.AddTransient<IProcessStakePools, StakePoolsProcessor>();
+					services.AddTransient<IProcessStake, StakeProcessor>();
+					services.AddTransient<IProcessSettings, SettingsProcessor>();
+					services.AddTransient<IRunDatabaseMaintenance, DatabaseMaintenance>();
 
-					// Inject shared models and other services
-					services.AddSingleton<KongoStatusModel>(_kongoStatus);
-
-					/* https://cmatskas.com/net-core-dependency-injection-with-constructor-parameters-2/ */
+					// Inject shared model and DbContext
+					services.AddSingleton<KongoStatusModel>(s => _kongoStatus);
 					services.AddTransient<KongoDataStorage>(s => new KongoDataStorage(_dbConnectionString));
 
 					// can opt out of all data collection and just run as website
-					if(!_opts.DisableDataCollection)
+					if (!_opts.DisableDataCollection)
 					{
 						// configure data collection workers
-						if (!_opts.NodeStats)
-							services.AddHostedService<NodeStats>();
-						if (!_opts.FragmentLogs)
-							services.AddHostedService<Fragments>();
-						if (!_opts.NetworkStats)
-							services.AddHostedService<NetworkStats>();
+						services.AddHostedService<NodeStats>();
+						services.AddHostedService<Fragments>();
+						services.AddHostedService<NetworkStats>();
 						if (!string.IsNullOrEmpty(_opts.PoolId))
 						{
-							if (!_opts.LeaderLogs)
-								services.AddHostedService<Leaders>();
+							
+							services.AddHostedService<Leaders>();
 						}
-						if (!_opts.StakeDistribution)
-							services.AddHostedService<Stake>();
-						if (!_opts.StakePools)
-							services.AddHostedService<StakePools>();
+						services.AddHostedService<Stake>();
+						services.AddHostedService<StakePools>();
+						services.AddHostedService<Settings>();
 					}
 
 					services.AddHostedService<Maintenance>();

@@ -25,28 +25,28 @@ namespace Kongo.Core.Models
 		[Option("disable-all-collectors", Required = false, HelpText = "Disable all data collection workers")]
 		public bool DisableDataCollection { get; set; }
 
-		[Option("disable-node-stats", Required = false, HelpText = "Disable collection of node statistics every 30 seconds")]
+		[Option("verbose-node-stats", Required = false, HelpText = "Show verbose request details for collection of node statistics every 30 seconds")]
 		public bool NodeStats { get; set; }
 
-		[Option("disable-network-stats", Required = false, HelpText = "Disable collection of network stats every 30 seconds")]
+		[Option("verbose-network-stats", Required = false, HelpText = "Show verbose request details for collection of network stats every 30 seconds")]
 		public bool NetworkStats { get; set; }
 
-		[Option("disable-fragment-logs", Required = false, HelpText = "Disable collection of fragment logs every 30 seconds")]
+		[Option("verbose-fragment-logs", Required = false, HelpText = "Show verbose request details for collection of fragment logs every 30 seconds")]
 		public bool FragmentLogs { get; set; }
 
-		[Option("show-fragments", Required = false, HelpText = "Show verbose list of fragment logs every 30 seconds, if fragment logs are being collected")]
+		[Option("show-all-fragments", Required = false, HelpText = "Show verbose list of fragment logs every 30 seconds, if fragment logs are being collected")]
 		public bool ShowFragments { get; set; }
 
-		[Option("disable-leader-logs", Required = false, HelpText = "Disable collection of leaders every 30 seconds")]
+		[Option("verbose-leader-logs", Required = false, HelpText = "Show verbose request details for collection of leaders every 30 seconds")]
 		public bool LeaderLogs { get; set; }
 
-		[Option("disable-pool-settings", Required = false, HelpText = "Disable collection of pool settings every 30 seconds")]
+		[Option("verbose-pool-settings", Required = false, HelpText = "Show verbose request details for collection of pool settings every 30 seconds")]
 		public bool PoolSettings { get; set; }
 
-		[Option("disable-stake-pool-logs", Required = false, HelpText = "Disable collection of list of Stake Pools every 30 seconds")]
+		[Option("verbose-stake-pool-logs", Required = false, HelpText = "Show verbose request details for collection of list of Stake Pools every 30 seconds")]
 		public bool StakePools { get; set; }
 
-		[Option("disable-stake-logs", Required = false, HelpText = "Disable collection of Stake Distribution logs every 30 seconds")]
+		[Option("verbose-stake-logs", Required = false, HelpText = "Show verbose request details for collection of Stake Distribution logs every 30 seconds")]
 		public bool StakeDistribution { get; set; }
 
 		[Option("server.urls", Required = false, HelpText = "ASP.NET endpoint urls")]
@@ -57,6 +57,11 @@ namespace Kongo.Core.Models
 		
 		public DateTimeOffset ApplicationStartedOn { get; set; }
 
+		public KongoOptions ShallowCopy()
+		{
+			return (KongoOptions)this.MemberwiseClone();
+		}
+
 		[Usage(ApplicationAlias = "Kongo")]
 		public static IEnumerable<Example> Examples =>
 			new List<Example>() {
@@ -66,13 +71,13 @@ namespace Kongo.Core.Models
 				new Example("\r\nSpecify folder path to Kongo.SQlite datbase", new KongoOptions { DatabasePath = @".\" }),
 				new Example("\r\nOutput verbose fragment logs", new KongoOptions { ShowFragments = true }),
 				new Example("\r\nDisable all data collection workers", new KongoOptions { DisableDataCollection = true }),
-				new Example("\r\nDisable collection of node statistics", new KongoOptions { NodeStats = true }),
-				new Example("\r\nDisable collection of network statistics", new KongoOptions { NetworkStats = true }),
-				new Example("\r\nDisable collection of fragment logs", new KongoOptions { FragmentLogs = true }),
-				new Example("\r\nDisable collection of leaders log", new KongoOptions { LeaderLogs = true }),
-				new Example("\r\nDisable collection of Pools settings", new KongoOptions { PoolSettings = true }),
-				new Example("\r\nDisable collection of Stake Pools list", new KongoOptions { StakePools = true }),
-				new Example("\r\nDisable collection of Stake Distribution", new KongoOptions { StakeDistribution = true }),
+				new Example("\r\nShow verbose request details for collection of node statistics", new KongoOptions { NodeStats = true }),
+				new Example("\r\nShow verbose request details for collection of network statistics", new KongoOptions { NetworkStats = true }),
+				new Example("\r\nShow verbose request details for collection of fragment logs", new KongoOptions { FragmentLogs = true }),
+				new Example("\r\nShow verbose request details for collection of leaders log", new KongoOptions { LeaderLogs = true }),
+				new Example("\r\nShow verbose request details for collection of Pools settings", new KongoOptions { PoolSettings = true }),
+				new Example("\r\nShow verbose request details for collection of Stake Pools list", new KongoOptions { StakePools = true }),
+				new Example("\r\nShow verbose request details for collection of Stake Distribution", new KongoOptions { StakeDistribution = true }),
 				new Example("\r\nASP.NET Core endpoint urls", new KongoOptions { ServerUrls = "http://localhost:5100;http://localhost:5101;http://*:5102" }),
 				new Example("\r\nVerbose output, including raw rest response", new KongoOptions { Verbose = true })
 			};

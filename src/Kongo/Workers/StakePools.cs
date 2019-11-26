@@ -45,12 +45,9 @@ namespace Kongo.Workers
 				{
 					var response = await _httpClient.GetAsync(requestUri.Uri);
 
-					//will throw an exception if not successful
-					response.EnsureSuccessStatusCode();
-
 					string content = await response.Content.ReadAsStringAsync();
 
-					if (_opts.Verbose)
+					if (_opts.Verbose || _opts.StakePools)
 					{
 						var currentForeground = Console.ForegroundColor;
 						Console.ForegroundColor = ConsoleColor.Cyan;
@@ -61,10 +58,13 @@ namespace Kongo.Workers
 						Console.ForegroundColor = currentForeground;
 					}
 
+					//will throw an exception if not successful
+					response.EnsureSuccessStatusCode();
+
 					var processedStakePools = await _processor.ProcessStakePools(content);
 
 					_sb.Clear();
-					_sb.AppendLine($"StakePools running at: {DateTimeOffset.Now}");
+					_sb.AppendLine($"StakePools running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
 					_sb.AppendLine();
 

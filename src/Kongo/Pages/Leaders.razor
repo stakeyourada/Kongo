@@ -9,7 +9,7 @@
 @inject KongoDataStorage _database
 
 <div class="container-fluid">
-	<h1>Stake Pools</h1>
+	<h1>Leader Events</h1>
 	<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
 	<div class="container-fluid">
 		<div class="container-fluid">
@@ -19,7 +19,7 @@
 						<CardHeader>
 							<Row>
 								<strong>
-									Leader Event Schedule:
+									Schedule:
 								</strong>
 							</Row>
 							<Row>
@@ -44,20 +44,20 @@
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									@foreach (var leaderlog in leadersLogs)
+									@foreach (var leaderlog in leadersLogs.OrderBy(p => p.Scheduled_at_time).Select(log => log.ConvertToDisplayedLeadersLogsModel()))
 									{
-										<TableRow>
+									<TableRow>
 
-											<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
-											<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
-											<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
-											<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
-											<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
-											<TableRowCell>@leaderlog.Status</TableRowCell>
-											<TableRowCell>@leaderlog.Block</TableRowCell>
-											<TableRowCell>@leaderlog.Chain_length</TableRowCell>
-											<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
-										</TableRow>
+										<TableRowCell>@leaderlog.Enclave_leader_id</TableRowCell>
+										<TableRowCell>@leaderlog.Created_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Finished_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+										<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
+										<TableRowCell>@leaderlog.Status</TableRowCell>
+										<TableRowCell>@leaderlog.Block</TableRowCell>
+										<TableRowCell>@leaderlog.Chain_length</TableRowCell>
+										<TableRowCell>@leaderlog.Wake_at_time</TableRowCell>
+									</TableRow>
 									}
 								</TableBody>
 							</Table>

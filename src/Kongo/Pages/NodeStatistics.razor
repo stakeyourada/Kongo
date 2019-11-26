@@ -77,11 +77,6 @@
 	{
 		if (firstRender)
 		{
-			//// set this value so the UI renders the active button correctly on first render
-			//dataWindowFlag = _statusModel.CurrentChartTimeframe;
-			//dataWindow = (int)_statusModel.CurrentChartTimeframe;
-			//groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(_statusModel.CurrentChartTimeframe);
-
 			await OnTimeRangeClicked(dataWindowFlag);
 		}
 	}
@@ -99,13 +94,14 @@
 		timestampAnalysisChart.AddDataSet(GetTimestampSkewForLastBlockTime());
 
 		blockHeightChart.AddLabel(nodeStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
-		blockHeightChart.AddDataSet(GetBlockHeight());
+		blockHeightChart.AddDataSet(GetMaxBlockHeight());
 
 		blocksReceivedChart.AddLabel(nodeStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
-		blocksReceivedChart.AddDataSet(GetBlockRecvCnt());
+		blocksReceivedChart.AddDataSet(GetMaxBlockRecvCnt());
 
 		uptimeChart.AddLabel(nodeStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
-		uptimeChart.AddDataSet(GetUptime());
+		uptimeChart.AddDataSet(GetMaxUptime());
+		uptimeChart.AddDataSet(GetMinUptime());
 
 		await timestampAnalysisChart.Update();
 		await blockHeightChart.Update();
@@ -122,9 +118,10 @@
 								.Select(t => new NodeStatisticsChartModel {
 									Timestamp = t.Timestamp,
 									LastBlockTime = t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default,
-									BlockRecvCnt = t.BlockRecvCnt,
-									LastBlockHeight = long.Parse(t.LastBlockHeight),
-									UpTime = t.Uptime,
+									MaxBlockRecvCnt = t.BlockRecvCnt,
+									MaxLastBlockHeight = long.Parse(t.LastBlockHeight),
+									MaxUpTime = t.Uptime,
+									MinUpTime = t.Uptime,
 									SkewInMinutes = t.Timestamp.Subtract(t.LastBlockTime.HasValue ? t.LastBlockTime.Value : default).TotalMinutes
 								}).ToList();
 
@@ -142,15 +139,12 @@
 			Timestamp = g.Key,
 			SkewInMinutes = g.Average(s => s.SkewInMinutes),
 			LastBlockTime = g.Max(s => s.LastBlockTime),
-			BlockRecvCnt = g.Max(s => s.BlockRecvCnt),
-			LastBlockHeight = g.Max(s => s.LastBlockHeight),
-			UpTime = g.Max(s => s.UpTime)
+			MaxBlockRecvCnt = g.Max(s => s.MaxBlockRecvCnt),
+			MaxLastBlockHeight = g.Max(s => s.MaxLastBlockHeight),
+			MaxUpTime = g.Max(s => s.MaxUpTime),
+			MinUpTime = g.Min(s => s.MinUpTime)
 		}).ToList();
 
-		//foreach (var stat in nodeStatisticsHistory)
-		//{
-		//	Console.WriteLine(stat.Timestamp.AddMinutes(-(stat.Timestamp.Minute %2)).AddMilliseconds(-stat.Timestamp.Millisecond -1000 * stat.Timestamp.Second));
-		//}
 	}
 
 	LineChartDataset<double> GetTimestampSkewForLastBlockTime()
@@ -158,66 +152,84 @@
 		return new LineChartDataset<double>
 		{
 			Label = "Block Time Skew (LastBlockTime vs Server Time) in minutes",
-			//Data = nodeStatisticsHistory.Select(p => new { SkewInMinutes = p.Timestamp.Subtract(p.LastBlockTime).TotalMinutes }).Select(p => p.SkewInMinutes).ToList(),
 			Data = nodeStatisticsHistory.Select(p => p.SkewInMinutes).ToList(),
-			BackgroundColor = backgroundColors_BlockRecvCnt,
-			BorderColor = borderColors_BlockRecvCnt,
+			BackgroundColor = backgroundColors_BlockTimeSkew,
+			BorderColor = borderColors_BlockTimeSkew,
 			Fill = true,
 			PointRadius = 2,
 			BorderDash = new List<int> { }
 		};
 	}
 
-	LineChartDataset<long> GetBlockRecvCnt()
+	LineChartDataset<long> GetMaxBlockRecvCnt()
 	{
 		return new LineChartDataset<long>
 		{
-			Label = "Blocks Received",
-			Data = nodeStatisticsHistory.Select(p => p.BlockRecvCnt).ToList(),
-			BackgroundColor = backgroundColors_BlockRecvCnt,
-			BorderColor = borderColors_BlockRecvCnt,
+			Label = "Max Blocks Received",
+			Data = nodeStatisticsHistory.Select(p => p.MaxBlockRecvCnt).ToList(),
+			BackgroundColor = backgroundColors_MaxBlockRecvCnt,
+			BorderColor = borderColors_MaxBlockRecvCnt,
 			Fill = true,
 			PointRadius = 2,
 			BorderDash = new List<int> { }
 		};
 	}
 
-	LineChartDataset<long> GetBlockHeight()
+	LineChartDataset<long> GetMaxBlockHeight()
 	{
 		return new LineChartDataset<long>
 		{
-			Label = "Block Height",
-			Data = nodeStatisticsHistory.Select(p => p.LastBlockHeight).ToList(),
-			BackgroundColor = backgroundColors_BlockHeight,
-			BorderColor = borderColors_BlockHeight,
+			Label = "Max Block Height",
+			Data = nodeStatisticsHistory.Select(p => p.MaxLastBlockHeight).ToList(),
+			BackgroundColor = backgroundColors_MaxBlockHeight,
+			BorderColor = borderColors_MaxBlockHeight,
 			Fill = true,
 			PointRadius = 2,
 			BorderDash = new List<int> { }
 		};
 	}
 
-	LineChartDataset<long> GetUptime()
+	LineChartDataset<long> GetMaxUptime()
 	{
 		return new LineChartDataset<long>
 		{
-			Label = "Node Uptime",
-			Data = nodeStatisticsHistory.Select(p => p.UpTime).ToList(),
-			BackgroundColor = backgroundColors_Uptime,
-			BorderColor = borderColors_Uptime,
+			Label = "Max Node Uptime",
+			Data = nodeStatisticsHistory.Select(p => p.MaxUpTime).ToList(),
+			BackgroundColor = backgroundColors_MaxUptime,
+			BorderColor = borderColors_MaxUptime,
 			Fill = true,
 			PointRadius = 2,
 			BorderDash = new List<int> { }
 		};
 	}
 
-	List<string> backgroundColors_BlockRecvCnt = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
-	List<string> borderColors_BlockRecvCnt = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
+	LineChartDataset<long> GetMinUptime()
+	{
+		return new LineChartDataset<long>
+		{
+			Label = "Min Node Uptime",
+			Data = nodeStatisticsHistory.Select(p => p.MinUpTime).ToList(),
+			BackgroundColor = backgroundColors_MinUptime,
+			BorderColor = borderColors_MinUptime,
+			Fill = true,
+			PointRadius = 2,
+			BorderDash = new List<int> { }
+		};
+	}
 
-	List<string> backgroundColors_BlockHeight = new List<string> { ChartColor.FromRgba(255, 99, 237, 0.2f) };
-	List<string> borderColors_BlockHeight = new List<string> { ChartColor.FromRgba(255, 99, 237, 1f) };
+	List<string> backgroundColors_BlockTimeSkew = new List<string> { ChartColor.FromRgba(255, 204, 153, 0.2f) };
+	List<string> borderColors_BlockTimeSkew = new List<string> { ChartColor.FromRgba(255, 204, 153, 1f) };
 
-	List<string> backgroundColors_Uptime = new List<string> { ChartColor.FromRgba(97, 250, 120, 0.2f) };
-	List<string> borderColors_Uptime = new List<string> { ChartColor.FromRgba(97, 250, 120, 1f) };
+	List<string> backgroundColors_MaxBlockRecvCnt = new List<string> { ChartColor.FromRgba(255, 204, 153, 0.2f) };
+	List<string> borderColors_MaxBlockRecvCnt = new List<string> { ChartColor.FromRgba(255, 204, 153, 1f) };
+
+	List<string> backgroundColors_MaxBlockHeight = new List<string> { ChartColor.FromRgba(153, 153, 255, 0.2f) };
+	List<string> borderColors_MaxBlockHeight = new List<string> { ChartColor.FromRgba(153, 153, 255, 1f) };
+
+	List<string> backgroundColors_MaxUptime = new List<string> { ChartColor.FromRgba(102, 255, 102, 0.2f) };
+	List<string> borderColors_MaxUptime = new List<string> { ChartColor.FromRgba(102, 255, 102, 1f) };
+	List<string> backgroundColors_MinUptime = new List<string> { ChartColor.FromRgba(255, 102, 102, 0.2f) };
+	List<string> borderColors_MinUptime = new List<string> { ChartColor.FromRgba(255, 102, 102, 1f) };
 
 	async Task OnTimeRangeClicked(TimeRangeEnum range)
 	{

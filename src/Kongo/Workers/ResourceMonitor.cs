@@ -16,12 +16,14 @@ namespace Kongo.Workers
 	{
 		private readonly ILogger<ResourceMonitor> _logger;
 		private readonly IProcessResourceUsage _processor;
+		private readonly KongoOptions _opts;
 		private readonly StringBuilder _sb;
 
-		public ResourceMonitor(ILogger<ResourceMonitor> logger, IProcessResourceUsage processor)
+		public ResourceMonitor(ILogger<ResourceMonitor> logger, IProcessResourceUsage processor, KongoOptions opts)
 		{
 			_logger = logger;
 			_processor = processor;
+			_opts = opts;
 			_sb = new StringBuilder();
 		}
 
@@ -124,7 +126,7 @@ namespace Kongo.Workers
 						//var processedNetworkStatistics = await _processor.ProcessNetworkStatistics(content);
 						
 						_sb.Clear();
-						_sb.AppendLine($"ResourceMonitor running at: {DateTimeOffset.Now}");
+						_sb.AppendLine($"ResourceMonitor running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 						_sb.AppendLine();
 						_sb.AppendLine();
 
