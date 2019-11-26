@@ -66,6 +66,21 @@ namespace Kongo.Workers
 					_sb.AppendLine($"Settings running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
 					_sb.AppendLine();
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"Last Updated".PadRight(20, ' ')} {processedSettings.Timestamp.ToString("g").PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"Block0Hash".PadRight(20, ' ')} {processedSettings.Block0Hash.PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"Block0Time".PadRight(20, ' ')} {processedSettings.Timestamp.ToString("g").PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"ConsensusVersion".PadRight(20, ' ')} {processedSettings.ConsensusVersion.PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"CurrSlotStartTime".PadRight(20, ' ')} {processedSettings.CurrSlotStartTime.ToString("g").PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"Fees".PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(5, ' ')} {"Certificate".PadRight(20, ' ')} {processedSettings.Certificate.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(5, ' ')} {"Coefficient".PadRight(20, ' ')} {processedSettings.Coefficient.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(5, ' ')} {"Constant".PadRight(20, ' ')} {processedSettings.Constant.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"MaxTxsPerBlock".PadRight(20, ' ')} {processedSettings.MaxTxsPerBlock.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"LastUpdated".PadRight(20, ' ')} {processedSettings.MaxTxsPerBlock.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"SlotDuration".PadRight(20, ' ')} {processedSettings.SlotDuration.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine($"{"".PadRight(2, ' ')} {"SlotsPerEpoch".PadRight(20, ' ')} {processedSettings.SlotsPerEpoch.ToString().PadRight(20, ' ')}");
+					_sb.AppendLine();
+					_sb.AppendLine();
 
 					_logger.LogInformation(_sb.ToString());
 				}

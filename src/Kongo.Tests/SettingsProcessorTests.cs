@@ -23,9 +23,9 @@ namespace Kongo.Tests
 			storage.Database.EnsureCreated();
 			var opts = new KongoOptions() { ApplicationStartedOn = DateTimeOffset.UtcNow };
 			_processor = new SettingsProcessor(storage, opts);
-			var nodeStats = await _processor.ProcessSettings(value);
+			var settings = await _processor.ProcessSettings(value);
 			storage.Database.EnsureDeleted();
-			Assert.True(true);
+			Assert.True(settings.Coefficient == 50);
 		}
 
 

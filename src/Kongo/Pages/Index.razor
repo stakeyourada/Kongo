@@ -313,8 +313,10 @@
 		if (records.Skip(1).Any())
 		{
 			return records.OrderBy(r => r.Id).Last();
+		} else
+		{
+			return records.FirstOrDefault();
 		}
-		return null;
 	}
 
 	ProcessedNetworkStatisticsModel GetLastNetworkSummary()
@@ -323,8 +325,10 @@
 		if (records.Skip(1).Any())
 		{
 			return records.OrderBy(r => r.Id).Last();
+		} else
+		{
+			return records.FirstOrDefault();
 		}
-		return null;
 	}
 
 	NodeStatisticsModel GetLastNodeStatsSummary()
@@ -333,8 +337,10 @@
 		if (records.Skip(1).Any())
 		{
 			return records.OrderBy(r => r.Id).Last();
+		} else
+		{
+			return records.FirstOrDefault();
 		}
-		return null;
 	}
 
 	ProcessedLeadersLogsModel GetLeaderEventsSummary()
@@ -343,8 +349,10 @@
 		if (records.Skip(1).Any())
 		{
 			return records.OrderBy(r => r.Id).Last();
+		} else
+		{
+			return records.FirstOrDefault();
 		}
-		return null;
 	}
 
 	void RefreshHistory()

@@ -52,6 +52,7 @@ namespace Kongo.Core.DataServices
 		public DbSet<ProcessedNetworkStatisticsModel> NetworkStatistics { get; set; }
 		public DbSet<ProcessedLeadersLogsModel> LeadersLogs { get; set; }
 		public DbSet<ProcessedStakeModel> StakeDistribution { get; set; }
+		public DbSet<StoredSettingsModel> Settings { get; set; }
 
 		public bool InsideLINQPad { get; private set; }
 
@@ -148,6 +149,25 @@ namespace Kongo.Core.DataServices
 				b.Property(e => e.Unassigned);
 				b.ToTable("StakeDistribution");
 			});
+
+			modelBuilder.Entity<StoredSettingsModel>(b =>
+			{
+				b.HasKey(e => e.Id);
+				b.Property(e => e.Id).ValueGeneratedOnAdd();
+				b.Property(e => e.Timestamp);
+				b.HasIndex(b => b.Timestamp);
+				b.Property(e => e.Block0Hash);
+				b.Property(e => e.ConsensusVersion);
+				b.Property(e => e.CurrSlotStartTime);
+				b.Property(e => e.Certificate);
+				b.Property(e => e.Coefficient);
+				b.Property(e => e.Constant);
+				b.Property(e => e.MaxTxsPerBlock);
+				b.Property(e => e.SlotDuration);
+				b.Property(e => e.SlotsPerEpoch);
+				b.ToTable("Settings");
+			});
+
 		}
 	}
 }

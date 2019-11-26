@@ -5,6 +5,6 @@ namespace Kongo.Core.Interfaces
 {
 	public interface IProcessSettings
 	{
-		Task<ProcessedSettingsModel> ProcessSettings(string jsonContent);
+		Task<StoredSettingsModel> ProcessSettings(string jsonContent);
 	}
 }

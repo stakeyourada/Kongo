@@ -30,7 +30,7 @@ namespace Kongo.Core.DataProcessors
 		/// </summary>
 		/// <param name="jsonContent"></param>
 		/// <returns></returns>
-		public Task<ProcessedSettingsModel> ProcessSettings(string jsonContent)
+		public Task<StoredSettingsModel> ProcessSettings(string jsonContent)
 		{
 			Exceptions.ThrowIfNotJson(jsonContent, "jsonContent");
 
@@ -39,15 +39,42 @@ namespace Kongo.Core.DataProcessors
 
 			//query last settings, if changed save the new settings to the DB
 
-			//// SQL Lite can't map IEnum or dynamic objects, so trim to just the aggregate counts
-			//_database.Leaders.Add(new StoredLeadersModel
-			//{
-			//	Timestamp = result.Timestamp				
-			//});
-			
-			//_database.SaveChanges();
+			var settings = GetCurrentSettings();
 
-			return Task.FromResult(result);
+			if (result.CompareTo(settings) > 0)
+			{
+				_database.Settings.Add(new StoredSettingsModel
+				{
+					Timestamp = result.Timestamp,
+					Block0Hash = result.Block0Hash,
+					Block0Time = result.Block0Time,
+					ConsensusVersion = result.ConsensusVersion,
+					CurrSlotStartTime = result.CurrSlotStartTime,
+					Certificate = result.Fees.Certificate,
+					Coefficient = result.Fees.Coefficient,
+					Constant = result.Fees.Constant,
+					MaxTxsPerBlock = result.MaxTxsPerBlock,
+					SlotDuration = result.SlotDuration,
+					SlotsPerEpoch = result.SlotsPerEpoch
+				});
+
+				_database.SaveChanges();
+			}
+
+			return Task.FromResult(GetCurrentSettings());
 		}
+
+		private StoredSettingsModel GetCurrentSettings()
+		{
+			var records = _database.Settings.AsEnumerable();
+			if (records.Skip(1).Any())
+			{
+				return records.OrderBy(r => r.Id).Last();
+			} else
+			{
+				return records.FirstOrDefault();
+			}
+		}
+
 	}
 }
