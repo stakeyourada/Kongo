@@ -6,10 +6,13 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
+    env:
+      artifact_path: ./artifacts/${{matrix.os}}
+      source_path: ./src
     strategy:
       matrix:
         os: [windows-latest, ubuntu-16.04, ubuntu-18.04, macOS-latest]
-        
+               
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
@@ -17,8 +20,21 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: Build with dotnet
+      working-directory: ${{ env.source_path }}
       run: dotnet build --configuration Release
     - name: Run Tests
+      working-directory: ${{ env.source_path }}
       run: dotnet test --configuration Release
+    - name: Create Artifacts folder
+      run: |
+        mkdir ./artifacts
+        mkdir ${{ env.artifact_path }}
     - name: Run Publish
-      run: dotnet publish --configuration Release
+      working-directory: ${{ env.source_path }}      
+      run: dotnet publish --configuration Release --output ${{ env.artifact_path }}
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{matrix.os}}
+        path: ${{ env.artifact_path }}
+      
