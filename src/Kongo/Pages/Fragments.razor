@@ -4,9 +4,6 @@
 @using Kongo.Core.Models
 @using System.Globalization
 
-@inject KongoStatusModel _statusModel
-@inject KongoDataStorage _fragmentData
-
 <div class="container-fluid">
 	<h1>Transactions</h1>
 	<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
@@ -18,6 +15,7 @@
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.FifteenMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.FifteenMinutes))">15 min</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThirtyMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThirtyMinutes))">30 min</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.OneHour ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneHour))">1 hour</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.SixHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.SixHours))">6 hours</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.TwelveHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.TwelveHours))">12 hour</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.OneDay ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneDay))">24 hour</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThreeDays ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThreeDays))">72 hour</Button>
@@ -127,7 +125,7 @@
 
 	void RefreshHistory()
 	{
-		var allRecords = _fragmentData.FragmentStatistics.AsEnumerable();
+		var allRecords = _database.FragmentStatistics.AsEnumerable();
 		var filteredRecords = allRecords.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow));
 
 		fragmentStatisticsHistory = filteredRecords.GroupBy(x =>

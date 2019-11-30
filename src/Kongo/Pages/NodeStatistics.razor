@@ -4,12 +4,12 @@
 @using Kongo.Core.Models
 @using System.Globalization
 
-@inject KongoStatusModel _statusModel
-@inject KongoDataStorage _nodeStatisticsData
-
 <div class="container-fluid">
 	<h1>Node Statistics</h1>
 	<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
+	@*<p>
+		<TimeframeSelector OnDataWindowChanged="(async () => await DataWindowChanged())" @bind-DataWindow />
+	</p>*@
 	<p>
 		<div class="row">
 			<div><b>Chart timeframe:</b></div>
@@ -18,6 +18,7 @@
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.FifteenMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.FifteenMinutes))">15 min</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThirtyMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThirtyMinutes))">30 min</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.OneHour ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneHour))">1 hour</Button>
+					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.SixHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.SixHours))">6 hours</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.TwelveHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.TwelveHours))">12 hour</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.OneDay ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneDay))">24 hour</Button>
 					<Button IsActive="@(dataWindowFlag == TimeRangeEnum.ThreeDays ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThreeDays))">72 hour</Button>
@@ -30,6 +31,7 @@
 			<div class="row">
 				<div class="col-sm-3 col-md-6">
 					<LineChart @ref="timestampAnalysisChart" TItem="double" />
+					@*<BlockTimeSkewBase DataWindow="@dataWindow" GroupInterval="@groupInterval" />*@
 				</div>
 				<div class="col-sm-9 col-md-6">
 					<LineChart @ref="blockHeightChart" TItem="long" />
@@ -63,8 +65,6 @@
 
 	protected override Task OnInitializedAsync()
 	{
-		//_nodeStatisticsData.Database.EnsureCreated();
-
 		// set this value so the UI renders the active button correctly on first render
 		dataWindowFlag = _statusModel.CurrentChartTimeframe;
 		dataWindow = (int)_statusModel.CurrentChartTimeframe;
@@ -100,7 +100,6 @@
 		blocksReceivedChart.AddDataSet(GetMaxBlockRecvCnt());
 
 		uptimeChart.AddLabel(nodeStatisticsHistory.Select(p => p.Timestamp.ToString("g", DateTimeFormatInfo.InvariantInfo)).ToArray());
-		uptimeChart.AddDataSet(GetMaxUptime());
 		uptimeChart.AddDataSet(GetMinUptime());
 
 		await timestampAnalysisChart.Update();
@@ -111,7 +110,7 @@
 
 	void RefreshHistory()
 	{
-		var allRecords = _nodeStatisticsData.NodeStatisticEntries.AsEnumerable();
+		var allRecords = _database.NodeStatisticEntries.AsEnumerable();
 
 		var filteredRecords = allRecords
 								.Where(ns => ns.Timestamp > DateTimeOffset.UtcNow.AddMinutes(-dataWindow))
@@ -132,7 +131,7 @@
 			var stamp = x.Timestamp;
 			stamp = stamp.AddMinutes(-(stamp.Minute % groupInterval));
 			stamp = stamp.AddMilliseconds(-stamp.Millisecond - 1000 * stamp.Second);
-			stamp = stamp.AddTicks(-(stamp.UtcTicks % NSPerSecond));			
+			stamp = stamp.AddTicks(-(stamp.UtcTicks % NSPerSecond));
 			return stamp;
 		})
 		.Select(g => new NodeStatisticsChartModel {
@@ -165,7 +164,7 @@
 	{
 		return new LineChartDataset<long>
 		{
-			Label = "Max Blocks Received",
+			Label = "Blocks Received",
 			Data = nodeStatisticsHistory.Select(p => p.MaxBlockRecvCnt).ToList(),
 			BackgroundColor = backgroundColors_MaxBlockRecvCnt,
 			BorderColor = borderColors_MaxBlockRecvCnt,
@@ -179,24 +178,10 @@
 	{
 		return new LineChartDataset<long>
 		{
-			Label = "Max Block Height",
+			Label = "Block Height",
 			Data = nodeStatisticsHistory.Select(p => p.MaxLastBlockHeight).ToList(),
 			BackgroundColor = backgroundColors_MaxBlockHeight,
 			BorderColor = borderColors_MaxBlockHeight,
-			Fill = true,
-			PointRadius = 2,
-			BorderDash = new List<int> { }
-		};
-	}
-
-	LineChartDataset<long> GetMaxUptime()
-	{
-		return new LineChartDataset<long>
-		{
-			Label = "Max Node Uptime",
-			Data = nodeStatisticsHistory.Select(p => p.MaxUpTime).ToList(),
-			BackgroundColor = backgroundColors_MaxUptime,
-			BorderColor = borderColors_MaxUptime,
 			Fill = true,
 			PointRadius = 2,
 			BorderDash = new List<int> { }
@@ -207,7 +192,7 @@
 	{
 		return new LineChartDataset<long>
 		{
-			Label = "Min Node Uptime",
+			Label = "Node Uptime",
 			Data = nodeStatisticsHistory.Select(p => p.MinUpTime).ToList(),
 			BackgroundColor = backgroundColors_MinUptime,
 			BorderColor = borderColors_MinUptime,
@@ -226,8 +211,6 @@
 	List<string> backgroundColors_MaxBlockHeight = new List<string> { ChartColor.FromRgba(153, 153, 255, 0.2f) };
 	List<string> borderColors_MaxBlockHeight = new List<string> { ChartColor.FromRgba(153, 153, 255, 1f) };
 
-	List<string> backgroundColors_MaxUptime = new List<string> { ChartColor.FromRgba(102, 255, 102, 0.2f) };
-	List<string> borderColors_MaxUptime = new List<string> { ChartColor.FromRgba(102, 255, 102, 1f) };
 	List<string> backgroundColors_MinUptime = new List<string> { ChartColor.FromRgba(255, 102, 102, 0.2f) };
 	List<string> borderColors_MinUptime = new List<string> { ChartColor.FromRgba(255, 102, 102, 1f) };
 
@@ -237,6 +220,11 @@
 		dataWindowFlag = range;
 		dataWindow = (int)dataWindowFlag;
 		groupInterval = TimeRangeMap.GetGroupingIntervalFromTimeRange(range);
+		await HandleRedraw();
+	}
+
+	private async Task DataWindowChanged()
+	{
 		await HandleRedraw();
 	}
 }
