@@ -7,6 +7,8 @@ Cardano stakepool monitoring solution
 
 - [Current releases](https://github.com/stakeyourada/Kongo/releases) are simple xcopy deployable, see [Installation and Use Instructions](./Installation.md) to get started.
 
+- Or build it yourself using [Build Instructions](./BuildInstructions.md)
+
 - Join the [Kongo Discussions](https://t.me/KongoDiscussions) Telegram group
 
 - I am on Telegram @sedwardstx if you have any questions, i am also usually watching @CardanoStakePoolWorkgroup
