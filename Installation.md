@@ -38,7 +38,9 @@ Example running two instances side by side
 
 ## Command line options
 
-  **Required switches, will be populated from [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) if not specified**
+All switches will be populated from [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) if not specified
+
+  **Required switches**
   
     -p, --pool-name              example --pool-name "StakeYourAda.com"
     -r, --rest-uri               example --rest-uri "http://127.0.0.1:3101"
