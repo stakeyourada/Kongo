@@ -48,7 +48,7 @@ namespace Kongo.Workers
 						var response = await _httpClient.GetAsync(requestUri.Uri);
 						string content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose || _opts.NetworkStats)
+						if (_opts.Verbose || _opts.VerboseNetworkStats)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;

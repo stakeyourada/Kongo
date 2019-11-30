@@ -5,374 +5,400 @@
 @using System.Globalization
 @using Newtonsoft.Json;
 
-@inject KongoStatusModel _kongoStatus
-@inject KongoDataStorage _kongoDatabase
+@*@inject KongoStatusModel _kongoStatus
+@inject KongoDataStorage _kongoDatabase*@
 
-<Row>
-	<Column>
-		<Row>
-			<Column ColumnSize="ColumnSize.Is1">
-				<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
-			</Column>
-			<Column ColumnSize="ColumnSize.Is11">
-			</Column>
-		</Row>
-		<Row>
-			<Column ColumnSize="ColumnSize.Is6">
-				<Card Margin="Margin.Is1.FromBottom">
-					<CardHeader>
-						<Row>
-							<strong>
-								Node Statistics:
-							</strong>
-						</Row>
-						<Row>
-							<small>
-								Last run at: @_homePageModel.NodeStatistics?.Timestamp.ToUniversalTime();
-							</small>
-						</Row>
-					</CardHeader>
-					<CardBody>
-						<Table IsNarrow="true" IsHoverable="true">
-							<TableBody>
-								<TableRow>
-									<TableRowCell>BlockRecvCnt</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.BlockRecvCnt</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>LastBlockDate</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockDate</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>LastBlockFees</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockFees</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>LastBlockHash</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockHash</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>LastBlockHeight</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockHeight</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>lastBlockSum</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.lastBlockSum</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>LastBlockTime</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockTime</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>LastBlockTx</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockTx</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>TxRecvCnt</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.TxRecvCnt</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell>Uptime</TableRowCell>
-									<TableRowCell>@_homePageModel.NodeStatistics?.Uptime</TableRowCell>
-								</TableRow>
-							</TableBody>
-						</Table>
-					</CardBody>
-				</Card>
+	<div class="container-fluid">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-12">
+					<h1>Node Overview</h1>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-1">					
+					<p><Button Color="Color.Primary" IsOutline="true" Clicked="@(async () => await HandleRedraw())">Refresh</Button></p>
+				</div>
+				<div class="col-md-11">
+				</div>
+			</div>			
+		</div>
+	</div>
+	<p>
+		<div class="container-fluid">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-6">
+						<Card Margin="Margin.Is1.FromBottom">
+							<CardHeader>
+								<Row>
+									<strong>
+										Node Statistics:
+									</strong>
+								</Row>
+								<Row>
+									<small>
+										Last run at: @_homePageModel.NodeStatistics?.Timestamp.ToUniversalTime();
+									</small>
+								</Row>
+							</CardHeader>
+							<CardBody>
+								<Table IsNarrow="true" IsHoverable="true">
+									<TableBody>
+										<TableRow>
+											<TableRowCell>BlockRecvCnt</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.BlockRecvCnt</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>LastBlockDate</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockDate</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>LastBlockFees</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockFees</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>LastBlockHash</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockHash</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>LastBlockHeight</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockHeight</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>lastBlockSum</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.lastBlockSum</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>LastBlockTime</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockTime</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>LastBlockTx</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.LastBlockTx</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>TxRecvCnt</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.TxRecvCnt</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell>Uptime</TableRowCell>
+											<TableRowCell>@_homePageModel.NodeStatistics?.Uptime</TableRowCell>
+										</TableRow>
+									</TableBody>
+								</Table>
+							</CardBody>
+						</Card>
+					</div>
+					<div class="col-md-6">
+						<Card Margin="Margin.Is1.FromBottom">
+							<CardHeader>
+								<Row>
+									<strong>
+										Transaction Summary:
+									</strong>
+								</Row>
+								<Row>
+									<small>
+										Last run at: @_homePageModel.ProcessedFragments?.Timestamp.ToUniversalTime()
+									</small>
+								</Row>
+							</CardHeader>
+							<CardBody>
+								<Table IsNarrow="true" IsHoverable="true">
+									<TableHeader>
+										<TableRow>
+											<TableHeaderCell>Total Fragments:</TableHeaderCell>
+											<TableHeaderCell></TableHeaderCell>
+											<TableHeaderCell></TableHeaderCell>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Overall</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedFragments?.TotalFragments</TableRowCell>
+										</TableRow>
+									</TableBody>
+								</Table>
 
-			</Column>
-			<Column ColumnSize="ColumnSize.Is6">
-				<Card Margin="Margin.Is1.FromBottom">
-					<CardHeader>
-						<Row>
-							<strong>
-								Transaction Summary:
-							</strong>
-						</Row>
-						<Row>
-							<small>
-								Last run at: @_homePageModel.ProcessedFragments?.Timestamp.ToUniversalTime()
-							</small>
-						</Row>
-					</CardHeader>
-					<CardBody>
-						<Table IsNarrow="true" IsHoverable="true">
-							<TableBody>
-								<TableRow>
-									<TableRowCell><strong>Total Fragments:</strong></TableRowCell>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.TotalFragments</TableRowCell>
-								</TableRow>
-							</TableBody>
-						</Table>
+								<Table IsNarrow="true" IsHoverable="true">
+									<TableHeader>
+										<TableRow>
+											<TableHeaderCell>Fragments From:</TableHeaderCell>
+											<TableHeaderCell></TableHeaderCell>
+											<TableHeaderCell></TableHeaderCell>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Rest</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsReceviedFromRest</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Network</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsReceviedFromNetwork</TableRowCell>
+										</TableRow>
+									</TableBody>
+								</Table>
 
-						<Table IsNarrow="true" IsHoverable="true">
-							<TableHeader>
-								<TableRow>
-									<TableHeaderCell>Fragments From:</TableHeaderCell>
-									<TableHeaderCell></TableHeaderCell>
-									<TableHeaderCell></TableHeaderCell>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Rest</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsReceviedFromRest</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Network</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsReceviedFromNetwork</TableRowCell>
-								</TableRow>
-							</TableBody>
-						</Table>
+								<Table IsNarrow="true" IsHoverable="true">
+									<TableHeader>
+										<TableRow>
+											<TableHeaderCell>Fragments status:</TableHeaderCell>
+											<TableHeaderCell></TableHeaderCell>
+											<TableHeaderCell></TableHeaderCell>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Pending</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsPending</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>InABlock</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsInBlock</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Rejected</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsRejected</TableRowCell>
+										</TableRow>
+									</TableBody>
+								</Table>
+							</CardBody>
+						</Card>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<Card Margin="Margin.Is1.FromBottom">
+							<CardHeader>
+								<Row>
+									<strong>
+										Network Summary:
+									</strong>
+								</Row>
+								<Row>
+									<small>
+										Last run at: @_homePageModel.ProcessedNetworkStatistics?.Timestamp.ToUniversalTime()
+									</small>
+								</Row>
+							</CardHeader>
+							<CardBody>
+								<Table IsNarrow="true" IsHoverable="true">
+									<TableBody>
+										<TableRow>
+											<TableRowCell><strong>Total Established Connections:</strong></TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.TotalEstablishedConnections</TableRowCell>
+											<TableRowCell></TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell><strong>Last Events:</strong></TableRowCell>
+											<TableRowCell></TableRowCell>
+											<TableRowCell></TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Block Received:</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastBlockReceivedAt.Value.ToUniversalTime()</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Fragment Received:</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastFragmentReceivedAt.Value.ToUniversalTime()</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Gossip Received:</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastGossipReceivedAt.Value.ToUniversalTime()</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell></TableRowCell>
+											<TableRowCell></TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell><strong>30 minute stats:</strong></TableRowCell>
+											<TableRowCell></TableRowCell>
+											<TableRowCell></TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Nodes Sending Block</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.BlocksReceivedInPast30Min</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Nodes Sending Fragments</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.FragmentsReceivedInPast30Min</TableRowCell>
+										</TableRow>
+										<TableRow>
+											<TableRowCell></TableRowCell>
+											<TableRowCell>Nodes Gossiping</TableRowCell>
+											<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.GossipReceivedInPast30Min</TableRowCell>
+										</TableRow>
 
-						<Table IsNarrow="true" IsHoverable="true">
-							<TableHeader>
-								<TableRow>
-									<TableHeaderCell>Fragments status:</TableHeaderCell>
-									<TableHeaderCell></TableHeaderCell>
-									<TableHeaderCell></TableHeaderCell>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Pending</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsPending</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>InABlock</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsInBlock</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Rejected</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedFragments?.FragmentsRejected</TableRowCell>
-								</TableRow>
-							</TableBody>
-						</Table>
-					</CardBody>
-				</Card>
-			</Column>
-		</Row>
+									</TableBody>
+								</Table>
 
-		<Row>
-			<Column ColumnSize="ColumnSize.Is6">
-				<Card Margin="Margin.Is1.FromBottom">
-					<CardHeader>
-						<Row>
-							<strong>
-								Network Summary:
-							</strong>
-						</Row>
-						<Row>
-							<small>
-								Last run at: @_homePageModel.ProcessedNetworkStatistics?.Timestamp.ToUniversalTime()
-							</small>
-						</Row>
-					</CardHeader>
-					<CardBody>
-						<Table IsNarrow="true" IsHoverable="true">
-							<TableBody>
-								<TableRow>
-									<TableRowCell><strong>Total Established Connections:</strong></TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.TotalEstablishedConnections</TableRowCell>
-									<TableRowCell></TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell><strong>Last Events:</strong></TableRowCell>
-									<TableRowCell></TableRowCell>
-									<TableRowCell></TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Block Received:</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastBlockReceivedAt.Value.ToUniversalTime()</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Fragment Received:</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastFragmentReceivedAt.Value.ToUniversalTime()</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Gossip Received:</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.LastGossipReceivedAt.Value.ToUniversalTime()</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell></TableRowCell>
-									<TableRowCell></TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell><strong>30 minute stats:</strong></TableRowCell>
-									<TableRowCell></TableRowCell>
-									<TableRowCell></TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Nodes Sending Block</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.BlocksReceivedInPast30Min</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Nodes Sending Fragments</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.FragmentsReceivedInPast30Min</TableRowCell>
-								</TableRow>
-								<TableRow>
-									<TableRowCell></TableRowCell>
-									<TableRowCell>Nodes Gossiping</TableRowCell>
-									<TableRowCell>@_homePageModel.ProcessedNetworkStatistics?.GossipReceivedInPast30Min</TableRowCell>
-								</TableRow>
+							</CardBody>
+						</Card>
+					</div>
+					<div class="col-md-6">
+						<Card Margin="Margin.Is1.FromBottom">
+							<CardHeader>
+								<Row>
+									<strong>
+										Leader Events Summary:
+									</strong>
+								</Row>
+								<Row>
+									<small>
+										Last run at: @leadersUpdatedAt
+									</small>
+								</Row>
+							</CardHeader>
+							<CardBody>
+								<Table IsNarrow="true" IsHoverable="true">
+									<TableHeader>
+										<TableRow>
+											<TableHeaderCell>Scheduled Slot</TableHeaderCell>
+											<TableHeaderCell>Scheduled Time</TableHeaderCell>
+											<TableHeaderCell>Status</TableHeaderCell>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										@foreach (var leaderlog in _homePageModel?.ProcessedLeadersLogs.OrderBy(p => p.Scheduled_at_time).Select(log => log.ConvertToDisplayedLeadersLogsModel()))
+										{
+											<TableRow>
+												<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
+												<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
+												<TableRowCell>@leaderlog.Status</TableRowCell>
+											</TableRow>
+										}
+									</TableBody>
+								</Table>
+							</CardBody>
+						</Card>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						
+					</div>
+					<div class="col-md-6">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</p>
 
-							</TableBody>
-						</Table>
+		@code {
 
-					</CardBody>
-				</Card>
+			HomePageViewModel _homePageModel = new HomePageViewModel();
+			DateTimeOffset leadersUpdatedAt = default;
 
-			</Column>
-			<Column ColumnSize="ColumnSize.Is6">
-				<Card Margin="Margin.Is1.FromBottom">
-					<CardHeader>
-						<Row>
-							<strong>
-								Leader Events Summary:
-							</strong>
-						</Row>
-						<Row>
-							<small>
-								Last run at: @leadersUpdatedAt
-							</small>
-						</Row>
-					</CardHeader>
-					<CardBody>
-						<Table IsNarrow="true" IsHoverable="true">
-							<TableHeader>
-								<TableRow>
-									<TableHeaderCell>Scheduled Slot</TableHeaderCell>
-									<TableHeaderCell>Scheduled Time</TableHeaderCell>
-									<TableHeaderCell>Status</TableHeaderCell>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								@foreach (var leaderlog in _homePageModel?.ProcessedLeadersLogs.OrderBy(p => p.Scheduled_at_time).Select(log => log.ConvertToDisplayedLeadersLogsModel()))
-								{
-								<TableRow>
-									<TableRowCell>@leaderlog.Scheduled_at_date</TableRowCell>
-									<TableRowCell>@leaderlog.Scheduled_at_time</TableRowCell>
-									<TableRowCell>@leaderlog.Status</TableRowCell>
-								</TableRow>
-								}
-							</TableBody>
-						</Table>
-					</CardBody>
-				</Card>
-			</Column>
-		</Row>
-	</Column>
-</Row>
+			protected override Task OnInitializedAsync()
+			{
+				//_kongoDatabase.Database.Migrate();
+
+				RefreshHistory();
+
+				return Task.FromResult(true);
+			}
+
+			protected override async Task OnAfterRenderAsync(bool firstRender)
+			{
+				if (firstRender)
+				{
+					await HandleRedraw();
+				}
+			}
+
+			Task HandleRedraw()
+			{
+				RefreshHistory();
+
+				return Task.FromResult(true);
+			}
 
 
-@code {
+			StoredFragmentsModel GetLastFragmentsSummary()
+			{
+				var records = _database.FragmentStatistics.AsEnumerable();
+				if (records.Skip(1).Any())
+				{
+					return records.OrderBy(r => r.Id).Last();
+				}
+				else
+				{
+					return records.FirstOrDefault();
+				}
+			}
 
-	HomePageViewModel _homePageModel = new HomePageViewModel();
-	DateTimeOffset leadersUpdatedAt = default;
+			ProcessedNetworkStatisticsModel GetLastNetworkSummary()
+			{
+				var records = _database.NetworkStatistics.AsEnumerable();
+				if (records.Skip(1).Any())
+				{
+					return records.OrderBy(r => r.Id).Last();
+				}
+				else
+				{
+					return records.FirstOrDefault();
+				}
+			}
 
-	protected override Task OnInitializedAsync()
-	{
-		//_kongoDatabase.Database.Migrate();
+			NodeStatisticsModel GetLastNodeStatsSummary()
+			{
+				var records = _database.NodeStatisticEntries.AsEnumerable();
+				if (records.Skip(1).Any())
+				{
+					return records.OrderBy(r => r.Id).Last();
+				}
+				else
+				{
+					return records.FirstOrDefault();
+				}
+			}
 
-		RefreshHistory();
+			ProcessedLeadersLogsModel GetLeaderEventsSummary()
+			{
+				var records = _database.LeadersLogs.AsEnumerable();
+				if (records.Skip(1).Any())
+				{
+					return records.OrderBy(r => r.Id).Last();
+				}
+				else
+				{
+					return records.FirstOrDefault();
+				}
+			}
 
-		return Task.FromResult(true);
-	}
+			void RefreshHistory()
+			{
+				_homePageModel.ProcessedFragments = GetLastFragmentsSummary();
+				_homePageModel.ProcessedNetworkStatistics = GetLastNetworkSummary();
+				_homePageModel.NodeStatistics = GetLastNodeStatsSummary();
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			await HandleRedraw();
+				var processedLeadersLogs = GetLeaderEventsSummary();
+				if (processedLeadersLogs != null)
+				{
+					_homePageModel.ProcessedLeadersLogs = JsonConvert.DeserializeObject<List<StoredLeadersLogsModel>>(processedLeadersLogs.LeadersLogsJson);
+					leadersUpdatedAt = processedLeadersLogs.Timestamp;
+				}
+
+				_statusModel.PoolState = _homePageModel.NodeStatistics?.State;
+				if (long.TryParse(_homePageModel.NodeStatistics?.LastBlockHeight, out long currBlockHeight))
+				{
+					_statusModel.CurrentBlockHeight = currBlockHeight;
+				}
+			}
+
 		}
-	}
-
-	Task HandleRedraw()
-	{
-		RefreshHistory();
-
-		return Task.FromResult(true);
-	}
-
-
-	StoredFragmentsModel GetLastFragmentsSummary()
-	{
-		var records = _kongoDatabase.FragmentStatistics.AsEnumerable();
-		if (records.Skip(1).Any())
-		{
-			return records.OrderBy(r => r.Id).Last();
-		} else
-		{
-			return records.FirstOrDefault();
-		}
-	}
-
-	ProcessedNetworkStatisticsModel GetLastNetworkSummary()
-	{
-		var records = _kongoDatabase.NetworkStatistics.AsEnumerable();
-		if (records.Skip(1).Any())
-		{
-			return records.OrderBy(r => r.Id).Last();
-		} else
-		{
-			return records.FirstOrDefault();
-		}
-	}
-
-	NodeStatisticsModel GetLastNodeStatsSummary()
-	{
-		var records = _kongoDatabase.NodeStatisticEntries.AsEnumerable();
-		if (records.Skip(1).Any())
-		{
-			return records.OrderBy(r => r.Id).Last();
-		} else
-		{
-			return records.FirstOrDefault();
-		}
-	}
-
-	ProcessedLeadersLogsModel GetLeaderEventsSummary()
-	{
-		var records = _kongoDatabase.LeadersLogs.AsEnumerable();
-		if (records.Skip(1).Any())
-		{
-			return records.OrderBy(r => r.Id).Last();
-		} else
-		{
-			return records.FirstOrDefault();
-		}
-	}
-
-	void RefreshHistory()
-	{
-		_homePageModel.ProcessedFragments = GetLastFragmentsSummary();
-		_homePageModel.ProcessedNetworkStatistics = GetLastNetworkSummary();
-		_homePageModel.NodeStatistics = GetLastNodeStatsSummary();
-
-		var processedLeadersLogs = GetLeaderEventsSummary();
-		if (processedLeadersLogs != null)
-		{
-			_homePageModel.ProcessedLeadersLogs = JsonConvert.DeserializeObject<List<StoredLeadersLogsModel>>(processedLeadersLogs.LeadersLogsJson);
-			leadersUpdatedAt = processedLeadersLogs.Timestamp;
-		}
-
-		_kongoStatus.PoolState = _homePageModel.NodeStatistics?.State;
-		if(long.TryParse(_homePageModel.NodeStatistics?.LastBlockHeight, out long currBlockHeight))
-		{
-			_kongoStatus.CurrentBlockHeight = currBlockHeight;
-		}
-	}
-
-}

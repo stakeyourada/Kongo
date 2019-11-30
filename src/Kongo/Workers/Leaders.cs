@@ -57,7 +57,7 @@ namespace Kongo.Workers
 
 						var content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose || _opts.LeaderLogs)
+						if (_opts.Verbose || _opts.VerboseLeaderLogs)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;
@@ -94,7 +94,7 @@ namespace Kongo.Workers
 						var response = await _httpClient.GetAsync(requestUri.Uri);
 						var content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose || _opts.LeaderLogs)
+						if (_opts.Verbose || _opts.VerboseLeaderLogs)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;

@@ -36,6 +36,7 @@ namespace Kongo.Workers
 					_sb.Clear();
 					_sb.AppendLine($"Database Maintenance job started running on {_opts.PoolName}, at: {DateTimeOffset.Now}");
 					_sb.AppendLine();
+					_sb.AppendLine($"Database path = {_opts.DatabasePath}");
 
 					await _databaseMaintenance.RunDatabaseMaintenance(stoppingToken);
 

@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using System.Threading.Tasks;
+using ElectronNET.API;
+using ElectronNET.API.Entities;
 
 namespace Kongo
 {
@@ -60,6 +63,12 @@ namespace Kongo
 				endpoints.MapBlazorHub();
 				endpoints.MapFallbackToPage("/_Host");
 			});
+
+			var options = new BrowserWindowOptions()
+			{
+				Title = "Kongo stakepool monitor"
+			};
+			Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(options));
 		}
 	}
 }

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using CommandLine;
+using ElectronNET.API;
 using Kongo.Core.DataProcessors;
 using Kongo.Core.DataServices;
 using Kongo.Core.Interfaces;
@@ -32,7 +36,9 @@ namespace Kongo
 			try
 			{
 				// Parse command line and execute requested Verb
-				CommandLine.Parser.Default.ParseArguments<KongoOptions>(args)
+				var config = new Program().ReadKongoConfiguration(args);
+
+				CommandLine.Parser.Default.ParseArguments<KongoOptions>(config)
 					.MapResult(
 						(KongoOptions opts) => LoadKongoOptions(opts),
 						HandleParseError);
@@ -54,15 +60,19 @@ namespace Kongo
 			using (var scope = host.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
+				
+				var logger = services.GetRequiredService<ILogger<Program>>();
 
 				try
 				{
 					var context = services.GetRequiredService<KongoDataStorage>();
 					context.Database.Migrate();
+
+					using var connection = context.Database.GetDbConnection();
+					logger.LogInformation($"Database migrated: {connection.ConnectionString}");
 				}
 				catch (Exception ex)
 				{
-					var logger = services.GetRequiredService<ILogger<Program>>();
 					logger.LogError(ex, "An error occurred creating the DB.");
 				}
 			}
@@ -113,7 +123,8 @@ namespace Kongo
 					if(_opts != null && !string.IsNullOrEmpty(_opts.ServerUrls))
 					{
 						webBuilder.UseUrls(_opts.ServerUrls.Split(';', StringSplitOptions.RemoveEmptyEntries));
-					}					
+					}
+					webBuilder.UseElectron(args);
 					webBuilder.UseStartup<Startup>();
 				});
 
@@ -133,18 +144,21 @@ namespace Kongo
 			// parse database path and create db connection string
 			try
 			{
-				var databasePath = Path.GetDirectoryName(_opts.DatabasePath);
-				if (databasePath == string.Empty)
+				if(File.Exists(_opts.DatabasePath) && !Directory.Exists(_opts.DatabasePath))
 				{
-					databasePath = ".";
-				}
-				else
+					_dbConnectionString = $"Data Source={_opts.DatabasePath};";
+				} else
 				{
-					if (!Directory.Exists(databasePath))
-						Directory.CreateDirectory(databasePath);
+					if(_opts.DatabasePath.EndsWith(".sqlite", StringComparison.InvariantCultureIgnoreCase))
+					{
+						_dbConnectionString = $"Data Source={_opts.DatabasePath};";
+					} else {
+						if (!Directory.Exists(_opts.DatabasePath))
+							Directory.CreateDirectory(_opts.DatabasePath);
+						
+						_dbConnectionString = $"Data Source={Path.Combine(_opts.DatabasePath, "Kongo.SQlite")};";
+					}
 				}
-
-				_dbConnectionString = $"Data Source={databasePath}/Kongo.SQlite;";
 			}
 			catch (Exception ex)
 			{
@@ -163,11 +177,111 @@ namespace Kongo
 				CurrentBlockHeight = 0,
 				CurrentChartTimeframe = TimeRangeEnum.OneHour,
 				LastBlockReceivedAt = default,
-				PoolState = "Kongo Initializing",
+				PoolState = "Jormungandr Initializing",
 				PoolUptime = TimeSpan.FromSeconds(0)
 			};
 
 			return true;
+		}
+
+		public static object GetPropValue(object src, string propName)
+		{
+			return src.GetType().GetProperty(propName).GetValue(src, null);
+		}
+
+		private string[] ReadKongoConfiguration(string[] args)
+		{
+			var options = new Dictionary<string, string>();
+			var results = new List<string>();
+
+			// We store options in Kongo.options.json
+			var defaultOptionsFile = $"{Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule?.FileName)}.options{".json"}";
+
+			if (File.Exists(defaultOptionsFile))
+			{
+				// open and deserialize config
+				var configurationJson = File.ReadAllText(defaultOptionsFile);
+				var configuration = JsonConvert.DeserializeObject<KongoOptions>(configurationJson);
+
+				// enumerate all the properties of our KongoOptions class and build dictionary of Option switches and configuration values from disk
+				try
+				{
+					PropertyInfo[] argumentProperties = configuration.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
+						.Where(p => 
+							p.CustomAttributes.Any() 
+						).ToArray();
+
+					foreach (PropertyInfo argumentProperty in argumentProperties)
+					{
+						var attribute = argumentProperty.CustomAttributes.Where(a => a.AttributeType == typeof(OptionAttribute)).FirstOrDefault();
+						if(attribute != null)
+						{
+							var propertyValue = Convert.ChangeType(
+								GetPropValue(configuration, argumentProperty.Name), 
+								argumentProperty.PropertyType);
+
+							var arg = attribute.ConstructorArguments.Last();
+							if (arg.ArgumentType.Equals(typeof(String)))
+							{
+								var longKey = arg.Value.ToString().Replace("\"", "");
+								options.Add("--" + longKey, propertyValue == null ? "" : propertyValue.ToString());
+							}
+						}
+					}
+				}
+				catch (Exception)
+				{
+				}
+
+				// Update dictionary and override any settings passed in through the command line arguments
+				for (int i = 0; i < args.GetUpperBound(0) + 1; i++)
+				{
+					if (options.ContainsKey(args[i]))
+					{
+						if (options.TryGetValue(args[i], out string configValue))
+						{
+							if (bool.TryParse(configValue, out bool isEnabled))
+							{
+								// if we were passed a bool switch, then set it to true
+								if (!isEnabled)
+								{
+									options[args[i]] = true.ToString();
+								}
+							}
+							else
+							{
+								// update with value from passed arguments
+								options[args[i]] = args[i + 1];
+							}
+						}
+					}
+				}
+			}
+
+			Console.WriteLine("Current Settings:");
+			Console.WriteLine();
+
+			// build final list arguments after merge
+			foreach (var option in options)
+			{				
+				Console.WriteLine($"{option.Key} = {option.Value}");
+				if (bool.TryParse(option.Value, out bool isEnabled))
+				{
+					if (isEnabled)
+					{
+						results.Add(option.Key);
+					}
+				} else
+				{
+					if(!string.IsNullOrEmpty(option.Value))
+					{
+						results.Add(option.Key);
+						results.Add(option.Value);
+					}
+				}
+			}
+			Console.WriteLine();
+			return results.ToArray();
 		}
 	}
 }

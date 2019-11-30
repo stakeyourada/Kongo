@@ -1,0 +1,21 @@
+﻿@inherits TimeframeSelectorBase
+
+@using Kongo.Core.Models
+
+
+<div class="row">
+	<div><b>Chart timeframe:</b></div>
+	<div class="col-sm-8">
+		<Buttons>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.FifteenMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.FifteenMinutes))">15 min</Button>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.ThirtyMinutes ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThirtyMinutes))">30 min</Button>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.OneHour ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneHour))">1 hour</Button>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.SixHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.SixHours))">6 hours</Button>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.TwelveHours ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.TwelveHours))">12 hour</Button>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.OneDay ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.OneDay))">24 hour</Button>
+			<Button IsActive="@(DataWindowFlag == TimeRangeEnum.ThreeDays ? true: false)" Color="Color.Light" Clicked="@(async () => await OnTimeRangeClicked(TimeRangeEnum.ThreeDays))">72 hour</Button>
+		</Buttons>
+	</div>
+</div>
+
+
