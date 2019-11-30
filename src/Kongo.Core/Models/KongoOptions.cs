@@ -2,9 +2,6 @@
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 
 namespace Kongo.Core.Models
 {
@@ -19,11 +16,14 @@ namespace Kongo.Core.Models
 		[Option("rest-uri", Required = true, HelpText = @"Rest endpoint URI, e.g. http://127.0.0.1:3101")]
 		public string RestUri { get; set; }
 
-		[Option("database-path", Required = true, HelpText = "path {folder path only} to Kongo.SQlite datbase")]
+		[Option("database-path", Required = true, HelpText = "Storage path to Kongo.SQlite datbase")]
 		public string DatabasePath { get; set; }
 
 		[Option("pool-id", Required = false, HelpText = "Stakepool Id to track")]
 		public string PoolId { get; set; }
+
+		[Option("explorer-uri", Required = true, HelpText = @"Block explorer URI, e.g. https://explorer.nightly.jormungandr-testnet.iohkdev.io/")]
+		public string BlockExplorerUri { get; set; }
 
 		[Option("disable-all-collectors", Required = false, HelpText = "Disable all data collection workers")]
 		public bool DisableDataCollection { get; set; }
@@ -71,8 +71,9 @@ namespace Kongo.Core.Models
 				new Example("\r\nSpecify name of Stakepool", new KongoOptions { PoolName = @"StakeYourAda.com" }),
 				new Example("\r\nSpecify uri of Rest endpoint", new KongoOptions { RestUri = @"http://127.0.0.1:3101" }),
 				new Example("\r\nSpecify stakepool nodeid", new KongoOptions { PoolId = @"8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" }),
-				new Example("\r\nSpecify folder path to Kongo.SQlite datbase", new KongoOptions { DatabasePath = @".\" }),
+				new Example("\r\nSpecify folder path to Kongo.SQlite datbase", new KongoOptions { DatabasePath = @"D:/storage" }),
 				new Example("\r\nOutput verbose fragment logs", new KongoOptions { ShowAllFragmentData = true }),
+				new Example("\r\nSpecify uri of the block explorer", new KongoOptions { RestUri = @"https://explorer.nightly.jormungandr-testnet.iohkdev.io/" }),
 				new Example("\r\nDisable all data collection workers", new KongoOptions { DisableDataCollection = true }),
 				new Example("\r\nShow verbose request details for collection of node statistics", new KongoOptions { VerboseNodeStats = true }),
 				new Example("\r\nShow verbose request details for collection of network statistics", new KongoOptions { VerboseNetworkStats = true }),

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using CommandLine;
+using CommandLine.Text;
 using ElectronNET.API;
 using Kongo.Core.DataProcessors;
 using Kongo.Core.DataServices;
@@ -35,19 +36,40 @@ namespace Kongo
 		{
 			try
 			{
-				// Parse command line and execute requested Verb
-				var config = new Program().ReadKongoConfiguration(args);
+				if (args.Any(a => a.Contains("help", StringComparison.InvariantCultureIgnoreCase)))
+				{
+					var parser = new CommandLine.Parser(with => with.HelpWriter = null);
+					var result = parser.ParseArguments<KongoOptions>(args);
+					var helpText = HelpText.AutoBuild(result, h =>
+					{
+						//configure HelpText
+						h.AddPreOptionsLine("");
+						h.AddPreOptionsLine("----------------------------------");
+						h.AdditionalNewLineAfterOption = false; //remove newline between options
+						h.Heading = "Kongo 1.0.0-beta"; //change header
+						h.Copyright = "Brought to you by Stakeyourada.com";
+						return h;
+					}, e => e);
 
-				CommandLine.Parser.Default.ParseArguments<KongoOptions>(config)
-					.MapResult(
-						(KongoOptions opts) => LoadKongoOptions(opts),
-						HandleParseError);
+					Console.WriteLine();
+					Console.WriteLine(helpText);
+				}
+				else
+				{
+					// Parse command line and execute
+					var config = new Program().ReadKongoConfiguration(args);
 
-				var host = CreateHostBuilder(args).Build();
+					CommandLine.Parser.Default.ParseArguments<KongoOptions>(config)
+						.MapResult(
+							(KongoOptions opts) => LoadKongoOptions(opts),
+							HandleParseError);
 
-				CreateDbIfNotExists(host);
+					var host = CreateHostBuilder(args).Build();
 
-				host.Run();
+					CreateDbIfNotExists(host);
+
+					host.Run();
+				}
 			}
 			catch (ArgumentNullException)
 			{
@@ -60,7 +82,7 @@ namespace Kongo
 			using (var scope = host.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
-				
+
 				var logger = services.GetRequiredService<ILogger<Program>>();
 
 				try
@@ -79,7 +101,7 @@ namespace Kongo
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)			
+			Host.CreateDefaultBuilder(args)
 				.ConfigureServices((hostContext, services) =>
 				{
 					// Configuration
@@ -120,7 +142,7 @@ namespace Kongo
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
-					if(_opts != null && !string.IsNullOrEmpty(_opts.ServerUrls))
+					if (_opts != null && !string.IsNullOrEmpty(_opts.ServerUrls))
 					{
 						webBuilder.UseUrls(_opts.ServerUrls.Split(';', StringSplitOptions.RemoveEmptyEntries));
 					}
@@ -144,18 +166,21 @@ namespace Kongo
 			// parse database path and create db connection string
 			try
 			{
-				if(File.Exists(_opts.DatabasePath) && !Directory.Exists(_opts.DatabasePath))
+				if (File.Exists(_opts.DatabasePath) && !Directory.Exists(_opts.DatabasePath))
 				{
 					_dbConnectionString = $"Data Source={_opts.DatabasePath};";
-				} else
+				}
+				else
 				{
-					if(_opts.DatabasePath.EndsWith(".sqlite", StringComparison.InvariantCultureIgnoreCase))
+					if (_opts.DatabasePath.EndsWith(".sqlite", StringComparison.InvariantCultureIgnoreCase))
 					{
 						_dbConnectionString = $"Data Source={_opts.DatabasePath};";
-					} else {
+					}
+					else
+					{
 						if (!Directory.Exists(_opts.DatabasePath))
 							Directory.CreateDirectory(_opts.DatabasePath);
-						
+
 						_dbConnectionString = $"Data Source={Path.Combine(_opts.DatabasePath, "Kongo.SQlite")};";
 					}
 				}
@@ -207,17 +232,17 @@ namespace Kongo
 				try
 				{
 					PropertyInfo[] argumentProperties = configuration.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
-						.Where(p => 
-							p.CustomAttributes.Any() 
+						.Where(p =>
+							p.CustomAttributes.Any()
 						).ToArray();
 
 					foreach (PropertyInfo argumentProperty in argumentProperties)
 					{
 						var attribute = argumentProperty.CustomAttributes.Where(a => a.AttributeType == typeof(OptionAttribute)).FirstOrDefault();
-						if(attribute != null)
+						if (attribute != null)
 						{
 							var propertyValue = Convert.ChangeType(
-								GetPropValue(configuration, argumentProperty.Name), 
+								GetPropValue(configuration, argumentProperty.Name),
 								argumentProperty.PropertyType);
 
 							var arg = attribute.ConstructorArguments.Last();
@@ -263,7 +288,7 @@ namespace Kongo
 
 			// build final list arguments after merge
 			foreach (var option in options)
-			{				
+			{
 				Console.WriteLine($"{option.Key} = {option.Value}");
 				if (bool.TryParse(option.Value, out bool isEnabled))
 				{
@@ -271,9 +296,10 @@ namespace Kongo
 					{
 						results.Add(option.Key);
 					}
-				} else
+				}
+				else
 				{
-					if(!string.IsNullOrEmpty(option.Value))
+					if (!string.IsNullOrEmpty(option.Value))
 					{
 						results.Add(option.Key);
 						results.Add(option.Value);
