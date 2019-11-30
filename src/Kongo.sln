@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kongo", "Kongo\Kongo.csproj", "{A0B51767-6B38-4556-BA09-3D6F70B86D88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongo", "Kongo\Kongo.csproj", "{A0B51767-6B38-4556-BA09-3D6F70B86D88}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kongo.Core", "Kongo.Core\Kongo.Core.csproj", "{EA733B9F-29C4-4BF8-AD68-46B940C72F0A}"
 EndProject

@@ -1,0 +1,18 @@
+{
+	"PoolName": "Unnamed Pool",
+	"ServerUrls": null,
+	"RestUri": "http://127.0.0.1:3101",
+	"DatabasePath": "c:/temp/",
+	"PoolId": "c5f0f12633dab1dcd69d4d0cc50d64d8e3625eaa3e7592c940819563a7e483b8",
+	"DisableDataCollection": false,
+	"VerboseNodeStats": false,
+	"VerboseNetworkStats": false,
+	"VerboseFragmentLogs": false,
+	"ShowAllFragmentData": false,
+	"VerboseLeaderLogs": false,
+	"VerbosePoolSettings": false,
+	"VerboseStakePools": false,
+	"VerboseStakeDistribution": false,
+	"Verbose": false
+}
+

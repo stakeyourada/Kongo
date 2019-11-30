@@ -53,7 +53,7 @@ namespace Kongo.Workers
 
 						string content = await response.Content.ReadAsStringAsync();
 
-						if (_opts.Verbose || _opts.NodeStats)
+						if (_opts.Verbose || _opts.VerboseNodeStats)
 						{
 							var currentForeground = Console.ForegroundColor;
 							Console.ForegroundColor = ConsoleColor.Cyan;

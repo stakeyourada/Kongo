@@ -49,7 +49,7 @@ namespace Kongo.Workers
 
 					var response = await _httpClient.GetAsync(requestUri.Uri);
 
-					if (_opts.Verbose || _opts.FragmentLogs)
+					if (_opts.Verbose || _opts.VerboseFragmentLogs)
 					{
 						var currentForeground = Console.ForegroundColor;
 						Console.ForegroundColor = ConsoleColor.Cyan;
@@ -82,7 +82,7 @@ namespace Kongo.Workers
 					_sb.AppendLine();
 					_sb.AppendLine("Fragments from:");
 					_sb.AppendLine($"\t   Rest: {processedFragments.FragmentsReceviedFromRest}");
-					if (_opts.ShowFragments)
+					if (_opts.ShowAllFragmentData)
 					{
 						foreach (var frag in processedFragments.RestFragments)
 						{
@@ -90,7 +90,7 @@ namespace Kongo.Workers
 						}
 					}
 					_sb.AppendLine($"\tNetwork: {processedFragments.FragmentsReceviedFromNetwork}");
-					if (_opts.ShowFragments)
+					if (_opts.ShowAllFragmentData)
 					{
 						foreach (var frag in processedFragments.NetworkFragments)
 						{
@@ -100,7 +100,7 @@ namespace Kongo.Workers
 					_sb.AppendLine();
 					_sb.AppendLine("Fragments status:");
 					_sb.AppendLine($"\tPending: {processedFragments.FragmentsPending}");
-					if (_opts.ShowFragments)
+					if (_opts.ShowAllFragmentData)
 					{
 						foreach (var frag in processedFragments.PendingFragments)
 						{
@@ -108,7 +108,7 @@ namespace Kongo.Workers
 						}
 					}
 					_sb.AppendLine($"\tInBlock: {processedFragments.FragmentsInBlock}");
-					if (_opts.ShowFragments)
+					if (_opts.ShowAllFragmentData)
 					{
 						foreach (var frag in processedFragments.BlockFragments)
 						{
@@ -116,7 +116,7 @@ namespace Kongo.Workers
 						}
 					}
 					_sb.AppendLine($"\tRejected: {processedFragments.FragmentsRejected}");
-					if (_opts.ShowFragments)
+					if (_opts.ShowAllFragmentData)
 					{
 						foreach (var frag in processedFragments.RejectedFragments)
 						{

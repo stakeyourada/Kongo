@@ -5,6 +5,7 @@
 		FifteenMinutes = 15,
 		ThirtyMinutes = 30,
 		OneHour = 60,
+		SixHours = 360,
 		TwelveHours = 720,
 		OneDay = 1440,
 		ThreeDays = 4320
@@ -19,15 +20,17 @@
 				case TimeRangeEnum.FifteenMinutes:
 					return 1;
 				case TimeRangeEnum.ThirtyMinutes:
-					return 2; // 1;
+					return 2; 
 				case TimeRangeEnum.OneHour:
-					return 4; // 2;
+					return 4; 
+				case TimeRangeEnum.SixHours:
+					return 30; 
 				case TimeRangeEnum.TwelveHours:
-					return 60; // 10;
+					return 60; 
 				case TimeRangeEnum.OneDay:
-					return 40; // 20;
+					return 40; 
 				case TimeRangeEnum.ThreeDays:
-					return 120; // 60;
+					return 120; 
 				default:
 					return 1;
 			}
