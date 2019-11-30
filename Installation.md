@@ -7,31 +7,32 @@ Download latest release from [Kongo Releases](https://github.com/stakeyourada/Ko
 ## Windows
 
   * Download release to your desired location and unzip
-  * Run Kongo with desired options
+  * Edit [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) and configure settings
+  * Run Kongo.exe
 
 
 ## Ubuntu / macOs
 
   * Download release to your desired location and unzip, untar
+  * Edit [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) and configure settings
   * chmod +x Kongo
-  * Run Kongo with desired options
+  * Run Kongo
 
-## Kongo startup examples
+## Kongo command line examples
 
-Example running with all data collection
+**Note:** Command line arguments are optional and will override any settings in [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json)
+
+Example running two instances side by side
 ```code
-  Kongo --pool-name "0.8.0-rc1 Nightly" --pool-id "c5f0f12633dab1dcd69d4d0cc50d64d8e3625eaa3e7592c940819563a7e483b8" --rest-uri "http://127.0.0.1:3101" --database-path "d:/nightly/kongo.SQlite" --server.urls "http://localhost:5100;http://localhost:5101"
-```
+  Kongo --pool-name "0.8.0-rc2 Nightly" --pool-id "89d415166e5040fd56ef5cf9afbf4a1c1f2e1964ac9498e86c022259f391daff" --database-path "d:/nightly/kongo.SQlite" --server.urls "http://localhost:5100"
+  
+  Kongo --pool-name "0.8.0-rc2 Beta" --pool-id "8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" --database-path "d:/beta/kongo.SQlite" --server.urls "http://localhost:5200"
 
-Example running just as a web application, data collection disabled (--rest-url is required but will be ignored)
-```code
-  Kongo --pool-name "0.8.0-rc1 Nightly" --pool-id "c5f0f12633dab1dcd69d4d0cc50d64d8e3625eaa3e7592c940819563a7e483b8" --rest-uri "http://127.0.0.1:3101" --database-path "d:/nightly/kongo.SQlite" --server.urls "http://*:5102" --disable-all-collectors
 ```
-
 
 ## Command line options
 
-  **Required switches**
+  **Required switches, will be populated from [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) if not specified**
   
     -p, --pool-name              example --pool-name "StakeYourAda.com"
     -r, --rest-uri               example --rest-uri "http://127.0.0.1:3101"
