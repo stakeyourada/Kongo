@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <Copyright>2019 StakeYourAda.com</Copyright>
+    <Copyright>Brought to you by stakeyourada.com</Copyright>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Authors>Steve Edwards</Authors>
-    <Company>StakeYourAda.com</Company>
+    <Company>MIT LICENSED</Company>
     <Product>Kongo Stakepool Monitor</Product>
     <PackageProjectUrl>https://github.com/stakeyourada/Kongo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stakeyourada/Kongo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>1.0.1</Version>
+    <Version>1.0.0-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>
