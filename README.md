@@ -5,7 +5,7 @@ Cardano stakepool monitoring solution
 
 - This tools is built on [ASP.NET Core 3.0](https://docs.microsoft.com/en-us/aspnet/?view=aspnetcore-3.0#pivot=core) + [Server Side Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/hosting-models?view=aspnetcore-3.0)
 
-- Current releases are simple xcopy deployable, see [Installation and Use Instructions](./Installation.md) to get started.
+- [Current releases](https://github.com/stakeyourada/Kongo/releases) are simple xcopy deployable, see [Installation and Use Instructions](./Installation.md) to get started.
 
 - Join the [Kongo Discussions](https://t.me/KongoDiscussions) Telegram group
 
