@@ -9,6 +9,9 @@ Download latest release from [Kongo Releases](https://github.com/stakeyourada/Ko
   * Download release to your desired location and unzip
   * Edit [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) and configure settings
   * Run Kongo.exe
+```code
+  PS C:\kongo> .\Kongo.exe
+```
 
 
 ## Ubuntu / macOs
@@ -17,6 +20,9 @@ Download latest release from [Kongo Releases](https://github.com/stakeyourada/Ko
   * Edit [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) and configure settings
   * chmod +x Kongo
   * Run Kongo
+```code
+steve@/home/steve/kongo:~$ Kongo
+```
 
 ## Kongo command line examples
 
