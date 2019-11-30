@@ -1,5 +1,5 @@
 # Kongo
-Cardano stakepool monitoring and testing solution
+Cardano stakepool monitoring solution
 
 - This is designed to help Stake pool operations monitor their stake pools running on the [Shelley Networked Testsnets](https://iohk.zendesk.com/hc/en-us/categories/360002383814-Shelley-Networked-Testnet)
 
