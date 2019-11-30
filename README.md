@@ -12,3 +12,22 @@ Cardano stakepool monitoring and testing solution
 - I am on Telegram @sedwardstx if you have any questions, i am also usually watching @CardanoStakePoolWorkgroup
 
 - Please file bugs or feature requests in https://github.com/stakeyourada/Kongo/issues
+
+# What will you be able to monitor?
+
+**Node Overview**
+![Node Overview](./media/Node-overview.png)
+
+**Node Statistics**
+![Node Statistics](./media/Node-statistics.png)
+
+**Transaction Statistics**
+![Transaction Statistics](./media/Transaction-statistics.png)
+
+**Network Statistics**
+![Network Statistics](./media/Network-statistics.png)
+
+**Leader events**
+![Leader Events](./media/Leader-events.png)
+
+**+ more coming soon**
