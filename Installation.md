@@ -7,6 +7,14 @@ Download latest release from [Kongo Releases](https://github.com/stakeyourada/Ko
 ## Windows
 
   * Download release to your desired location and unzip
+ 
+    **note:** This should be a location which can access the rest endpoint for your stakepool node. e.g. if your node-config.yaml is configured with the default lopback then you would need to install Kongo on the same machine.  Take care to not change your nodes rest endpoint to the internet which will expose your node to potential attacks.
+  
+  ```code
+    rest:
+      listen: "127.0.0.1:3101"
+  ```
+  
   * Edit [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) and configure settings
   * Run Kongo.exe
 ```code
@@ -17,6 +25,14 @@ Download latest release from [Kongo Releases](https://github.com/stakeyourada/Ko
 ## Ubuntu / macOs
 
   * Download release to your desired location and unzip, untar
+    
+    **note:** This should be a location which can access the rest endpoint for your stakepool node. e.g. if your node-config.yaml is configured with the default lopback then you would need to install Kongo on the same machine.  Take care to not change your nodes rest endpoint to the internet which will expose your node to potential attacks.
+  
+  ```code
+    rest:
+      listen: "127.0.0.1:3101"
+  ```  
+  
   * Edit [Kongo.Options.json](https://github.com/stakeyourada/Kongo/blob/master/src/Kongo/Kongo.options.json) and configure settings
   * chmod +x Kongo
   * Run Kongo
