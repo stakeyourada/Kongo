@@ -46,7 +46,7 @@ namespace Kongo
 						h.AddPreOptionsLine("");
 						h.AddPreOptionsLine("----------------------------------");
 						h.AdditionalNewLineAfterOption = false; //remove newline between options
-						h.Heading = "Kongo 1.0.0-beta"; //change header
+						h.Heading = "Kongo 1.0.1-beta"; //change header
 						h.Copyright = "Brought to you by Stakeyourada.com";
 						return h;
 					}, e => e);

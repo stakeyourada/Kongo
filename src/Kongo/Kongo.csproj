@@ -4,7 +4,7 @@
     <Company>MIT LICENSED</Company>
     <Product>Kongo Stakepool Monitor</Product>
     <Authors>Steve Edwards</Authors>
-    <Version>1.0.0-beta</Version>
+    <Version>1.0.1-beta</Version>
     <PackageProjectUrl>https://github.com/stakeyourada/Kongo</PackageProjectUrl>
     <RepositoryUrl>https://github.com/stakeyourada/Kongo</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
