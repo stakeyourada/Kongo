@@ -36,5 +36,5 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: ${{matrix.os}}
-        path: ${{ env.artifact_path }}
+        path: ${{env.artifact_path}}/*
       
