@@ -55,6 +55,15 @@ namespace Kongo.Core.Models
 		[Option("server.urls", Required = false, HelpText = "ASP.NET endpoint urls")]
 		public string ServerUrls { get; set; }
 
+		[Option("cert-subject", Required = false, HelpText = "HTTPS endpoint certificate subject")]
+		public string CertificateSubject { get; set; }
+
+		[Option("cert-path", Required = false, HelpText = "Path on disk to certificate file")]
+		public string CertificatePath { get; set; }
+
+		[Option("cert-password", Required = false, HelpText = "Certificate password")]
+		public string CertificatePassword { get; set; }
+
 		[Option("verbose", Required = false, HelpText = "Show all Verbose output")]
 		public bool Verbose { get; set; }
 		
@@ -83,6 +92,9 @@ namespace Kongo.Core.Models
 				new Example("\r\nShow verbose request details for collection of Stake Pools list", new KongoOptions { VerboseStakePools = true }),
 				new Example("\r\nShow verbose request details for collection of Stake Distribution", new KongoOptions { VerboseStakeDistribution = true }),
 				new Example("\r\nASP.NET Core endpoint urls", new KongoOptions { ServerUrls = "http://localhost:5100;http://localhost:5101;http://*:5102" }),
+				new Example("\r\nSSL Certificate Subject", new KongoOptions { CertificateSubject = "stakeyourada.com" }),
+				new Example("\r\nSSL Certificate Path", new KongoOptions { CertificatePath = "/path/to/certificate" }),
+				new Example("\r\nSSL Certificate Password", new KongoOptions { CertificatePassword = "cert-P@ssw0rd" }),
 				new Example("\r\nVerbose output, including raw rest response", new KongoOptions { Verbose = true })
 			};
 
