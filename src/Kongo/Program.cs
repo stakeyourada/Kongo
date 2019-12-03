@@ -7,8 +7,10 @@ using System.Reflection;
 using CommandLine;
 using CommandLine.Text;
 using ElectronNET.API;
+using Kongo.Core.CustomExceptions;
 using Kongo.Core.DataProcessors;
 using Kongo.Core.DataServices;
+using Kongo.Core.Extensions;
 using Kongo.Core.Interfaces;
 using Kongo.Core.Models;
 using Kongo.Workers;
@@ -18,7 +20,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using YamlDotNet.Serialization;
 
 namespace Kongo
 {
@@ -46,7 +47,7 @@ namespace Kongo
 						h.AddPreOptionsLine("");
 						h.AddPreOptionsLine("----------------------------------");
 						h.AdditionalNewLineAfterOption = false; //remove newline between options
-						h.Heading = "Kongo 1.0.1-beta"; //change header
+						h.Heading = "Kongo 1.0.2"; //change header
 						h.Copyright = "Brought to you by Stakeyourada.com";
 						return h;
 					}, e => e);
@@ -142,11 +143,12 @@ namespace Kongo
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
+					webBuilder.UseElectron(args);
+					webBuilder.UseKestrel(options => options.ConfigureEndpoints());
 					if (_opts != null && !string.IsNullOrEmpty(_opts.ServerUrls))
 					{
-						webBuilder.UseUrls(_opts.ServerUrls.Split(';', StringSplitOptions.RemoveEmptyEntries));
+						webBuilder.UseKestrel(options => options.ConfigureUrls(_opts.ServerUrls.Split(';', StringSplitOptions.RemoveEmptyEntries)));
 					}
-					webBuilder.UseElectron(args);
 					webBuilder.UseStartup<Startup>();
 				});
 
@@ -159,9 +161,6 @@ namespace Kongo
 		{
 			_opts = opts;
 			_opts.ApplicationStartedOn = DateTimeOffset.UtcNow;
-
-			YamlDotNet.Serialization.Deserializer deserializer = new Deserializer();
-			Newtonsoft.Json.JsonSerializer js = new JsonSerializer();
 
 			// parse database path and create db connection string
 			try
@@ -194,6 +193,20 @@ namespace Kongo
 				Console.ForegroundColor = currentForeground;
 
 				_dbConnectionString = "Data Source=Kongo.SQlite;";
+			}
+
+			// validate urls info
+			if(!string.IsNullOrEmpty(_opts.ServerUrls))
+			{
+				if(string.IsNullOrEmpty(_opts.CertificateSubject))
+				{
+					if (string.IsNullOrEmpty(_opts.CertificatePath) || string.IsNullOrEmpty(_opts.CertificatePassword))
+					{
+						var message = "Missing dependent property:  (--server.url --cert-subject) or (--server.url --cert-path --cert-password) are required";
+						Console.WriteLine(message);
+						throw new KongoOptionsException(message);
+					}
+				}
 			}
 
 			// initialize Kongo Status model
