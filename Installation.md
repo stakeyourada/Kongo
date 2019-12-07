@@ -46,9 +46,9 @@ steve@/home/steve/kongo:~$ Kongo
 
 Example running two instances side by side
 ```code
-  Kongo --pool-name "0.8.0-rc2 Nightly" --pool-id "89d415166e5040fd56ef5cf9afbf4a1c1f2e1964ac9498e86c022259f391daff" --database-path "d:/nightly/kongo.SQlite" --server.urls "http://localhost:5100"
+  Kongo --pool-name "0.8.0-rc2 Nightly" --pool-id "89d415166e5040fd56ef5cf9afbf4a1c1f2e1964ac9498e86c022259f391daff" --database-path "d:/nightly/kongo.SQlite" --server.urls "http://localhost:5100" --cert-subject "localhost"
   
-  Kongo --pool-name "0.8.0-rc2 Beta" --pool-id "8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" --database-path "d:/beta/kongo.SQlite" --server.urls "http://localhost:5200"
+  Kongo --pool-name "0.8.0-rc2 Beta" --pool-id "8f779ef637831eb2acea6b3f9b3dbe4feb6e1d4ff49a06ef8bbec0d93a16db14" --database-path "d:/beta/kongo.SQlite" --server.urls "http://localhost:5200" --cert-subject "localhost"
 
 ```
 
